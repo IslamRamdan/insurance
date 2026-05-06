@@ -69,6 +69,8 @@ class VisaRequestController extends Controller
         }
 
         VisaRequest::create($data);
+        auth()->user()->visa_balance -= 1; // خصم تأشيرة واحدة من الرصيد
+        auth()->user()->save();
 
         return redirect()->route('dashboard')->with('success', 'تم تسجيل طلب التأشيرة بنجاح');
     }
@@ -139,7 +141,6 @@ class VisaRequestController extends Controller
         unset($data['passport_number']); // 🔥 يمنع التعديل
 
         $visaRequest->update($data);
-
         return redirect()->route('dashboard')
             ->with('success', 'تم تحديث طلب التأشيرة بنجاح');
     }
