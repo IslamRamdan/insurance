@@ -180,13 +180,16 @@
                                         <a href="{{ route('visa_requests.edit', $visa->id) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-edit mr-1"></i> تعديل
                                         </a>
-                                        <button class="btn btn-sm btn-success prepare-btn shadow-sm" title="تجهيز البيانات"
-                                            data-customer='@json($visa)' {{-- تمرير بيانات إنجاز من علاقة المستخدم صاحب التأشيرة --}}
-                                            data-engaz-email="{{ $visa->user->engaz_email ?? '' }}"
-                                            data-engaz-password="{{ $visa->user->engaz_password ?? '' }}"
-                                            data-application='@json($visa->visaApplication ?? [])'>
-                                            <i class="fas fa-bolt"></i>
-                                        </button>
+                                        @if (auth()->user()->engaz_password != null && auth()->user()->engaz_email != null)
+                                            <button class="btn btn-sm btn-success prepare-btn shadow-sm"
+                                                title="تجهيز البيانات" data-customer='@json($visa)'
+                                                {{-- تمرير بيانات إنجاز من علاقة المستخدم صاحب التأشيرة --}}
+                                                data-engaz-email="{{ $visa->user->engaz_email ?? '' }}"
+                                                data-engaz-password="{{ $visa->user->engaz_password ?? '' }}"
+                                                data-application='@json($visa->visaApplication ?? [])'>
+                                                <i class="fas fa-bolt"></i>
+                                            </button>
+                                        @endif
                                     @else
                                         <span class="badge badge-pill shadow-sm px-3 py-2"
                                             style="background-color: #006C35; color: white; font-weight: 600; font-size: 0.85rem;">
