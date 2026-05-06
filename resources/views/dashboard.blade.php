@@ -150,7 +150,7 @@
                     <tr>
                         <th style="width: 80px">الصورة</th>
                         <th>الاسم الكامل (عربي)</th>
-                        <th>الحالة</th>
+                        <th>e number</th>
                         <th style="width: 150px">الإجراءات</th>
                     </tr>
                 </thead>
@@ -172,20 +172,27 @@
                                 {{ $visa->a_first_name }} {{ $visa->a_father }} {{ $visa->a_family }}
                             </td>
                             <td class="align-middle">
-                                <span class="badge badge-success">نشط</span>
+                                <span class="badge badge-success">{{ $visa->e_number ?? 'في انتظار الحجز' }}</span>
                             </td>
                             <td class="align-middle">
                                 <div class="btn-group">
-                                    <a href="{{ route('visa_requests.edit', $visa->id) }}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-edit mr-1"></i> تعديل
-                                    </a>
-                                    <button class="btn btn-sm btn-success prepare-btn shadow-sm" title="تجهيز البيانات"
-                                        data-customer='@json($visa)' {{-- تمرير بيانات إنجاز من علاقة المستخدم صاحب التأشيرة --}}
-                                        data-engaz-email="{{ $visa->user->engaz_email ?? '' }}"
-                                        data-engaz-password="{{ $visa->user->engaz_password ?? '' }}"
-                                        data-application='@json($visa->visaApplication ?? [])'>
-                                        <i class="fas fa-bolt"></i>
-                                    </button>
+                                    @if ($visa->e_number == null)
+                                        <a href="{{ route('visa_requests.edit', $visa->id) }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-edit mr-1"></i> تعديل
+                                        </a>
+                                        <button class="btn btn-sm btn-success prepare-btn shadow-sm" title="تجهيز البيانات"
+                                            data-customer='@json($visa)' {{-- تمرير بيانات إنجاز من علاقة المستخدم صاحب التأشيرة --}}
+                                            data-engaz-email="{{ $visa->user->engaz_email ?? '' }}"
+                                            data-engaz-password="{{ $visa->user->engaz_password ?? '' }}"
+                                            data-application='@json($visa->visaApplication ?? [])'>
+                                            <i class="fas fa-bolt"></i>
+                                        </button>
+                                    @else
+                                        <span class="badge badge-pill shadow-sm px-3 py-2"
+                                            style="background-color: #006C35; color: white; font-weight: 600; font-size: 0.85rem;">
+                                            <i class="fas fa-check-circle mr-1"></i> تم الحجز
+                                        </span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -215,6 +222,32 @@
             border-radius: 10px;
         }
     </style>
+
+    <style>
+        /* تغيير لون الخلفية والنص للعنصر النشط في القائمة الجانبية */
+        .nav-sidebar .nav-item .nav-link.active {
+            background-color: #006C35 !important;
+            /* اللون الأخضر */
+            color: #ffffff !important;
+            /* لون النص أبيض */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            /* ظل خفيف لإبراز العنصر */
+            border-radius: 8px;
+            /* حواف مستديرة لتناسب الديزاين الجديد */
+        }
+
+        /* تغيير لون الأيقونة داخل العنصر النشط */
+        .nav-sidebar .nav-item .nav-link.active i {
+            color: #ffffff !important;
+        }
+
+        /* تأثير اختياري عند تمرير الماوس فوق العناصر غير النشطة */
+        .nav-sidebar .nav-item .nav-link:hover:not(.active) {
+            background-color: rgba(0, 108, 53, 0.1);
+            color: #006C35;
+        }
+    </style>
+
 @stop
 
 @section('js')

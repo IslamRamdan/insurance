@@ -159,6 +159,30 @@
             box-shadow: inset 0 0.15em 0.3em rgba(27, 31, 35, 0.15);
         }
     </style>
+    <style>
+        /* تغيير لون الخلفية والنص للعنصر النشط في القائمة الجانبية */
+        .nav-sidebar .nav-item .nav-link.active {
+            background-color: #006C35 !important;
+            /* اللون الأخضر */
+            color: #ffffff !important;
+            /* لون النص أبيض */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            /* ظل خفيف لإبراز العنصر */
+            border-radius: 8px;
+            /* حواف مستديرة لتناسب الديزاين الجديد */
+        }
+
+        /* تغيير لون الأيقونة داخل العنصر النشط */
+        .nav-sidebar .nav-item .nav-link.active i {
+            color: #ffffff !important;
+        }
+
+        /* تأثير اختياري عند تمرير الماوس فوق العناصر غير النشطة */
+        .nav-sidebar .nav-item .nav-link:hover:not(.active) {
+            background-color: rgba(0, 108, 53, 0.1);
+            color: #006C35;
+        }
+    </style>
 @stop
 
 @section('js')
