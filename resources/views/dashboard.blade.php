@@ -4,72 +4,83 @@
 
 @section('content_header')
     <div class="row mb-3">
-        @if (auth()->user()->engaz_password == null || auth()->user()->engaz_email == null)
-            <div class="top-notice">
-                <span><b>ملاحظة:</b> يجب ربط حساب إنجاز الخاص بك لتفعيل خاصية الحجز التلقائي.</span>
-                <a href="#">اربط الآن</a>
+        @if (auth()->check() && (auth()->user()->engaz_password == null || auth()->user()->engaz_email == null))
+            <div class="engaz-alert-bar">
+                <div class="container-fluid d-flex justify-content-center align-items-center gap-3">
+                    <span class="alert-text">
+                        <i class="fas fa-exclamation-triangle ml-2"></i>
+                        <strong>تنبيه:</strong> يجب ربط حساب إنجاز الخاص بك لتفعيل خاصية الحجز التلقائي.
+                    </span>
+                    <a href="{{ route('profile.edit') }}" class="btn-link-action">اربط الآن</a>
+                </div>
             </div>
             <style>
-                /* تنسيق شريط التنبيه العلوي */
-                .top-notice {
-                    background-color: #fff4e5;
-                    /* لون خلفية برتقالي فاتح جداً (تحذيري هادئ) */
-                    border-bottom: 1px solid #ffe2b9;
-                    /* خط سفلي لتحديد الشريط */
-                    padding: 12px 20px;
-                    text-align: center;
-                    font-size: 0.95rem;
-                    color: #664d03;
-                    /* لون نص بني داكن متناسق مع الخلفية */
-                    position: relative;
-                    z-index: 2000;
+                .engaz-alert-bar {
+                    background-color: #fff3cd;
+                    /* أصفر تحذيري هادئ */
+                    border-bottom: 1px solid #ffeeba;
+                    padding: 8px 0;
+                    /* تقليل الارتفاع ليكون أنحف */
+                    width: 100%;
+                    position: sticky;
+                    /* يظل ظاهراً عند التمرير */
+                    top: 0;
+                    z-index: 1050;
+                    /* أعلى من الـ Navbar */
                     direction: rtl;
-                    /* لضمان ترتيب العناصر من اليمين للشمال */
                     font-family: 'Cairo', sans-serif;
-                    /* أو أي خط عربي تستخدمه */
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 10px;
-                    /* مسافة بين النص والزرار */
-                    flex-wrap: wrap;
-                    /* عشان يظبط في الشاشات الصغيرة */
+                    animation: slideDown 0.5s ease-out;
                 }
 
-                /* تنسيق الكلمة المهمة */
-                .top-notice b {
-                    color: #e63946;
-                    /* لون أحمر هادئ للكلمة التنبيهية */
-                    font-weight: 700;
+                .alert-text {
+                    color: #856404;
+                    font-size: 0.9rem;
+                    font-weight: bold;
                 }
 
-                /* تنسيق زرار "اربط الآن" */
-                .top-notice a {
-                    color: #ffffff;
+                .alert-text i {
+                    color: #dc3545;
+                    /* لون الأيقونة أحمر للتنبيه */
+                }
+
+                .btn-link-action {
                     background-color: #006C35;
-                    /* لون أخضر رسمي (نفس لون الهوية السعودية) */
-                    padding: 4px 16px;
-                    border-radius: 6px;
-                    text-decoration: none;
-                    font-weight: 600;
-                    font-size: 0.85rem;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    color: #ffffff !important;
+                    padding: 3px 15px;
+                    border-radius: 20px;
+                    /* شكل كبسولة عصري */
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    text-decoration: none !important;
+                    transition: 0.3s;
+                    border: 1px solid transparent;
                 }
 
-                /* تأثير عند تمرير الماوس على الزرار */
-                .top-notice a:hover {
-                    background-color: #004d26;
-                    /* درجة أغمق قليلاً عند الهوفر */
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                .btn-link-action:hover {
+                    background-color: #ffffff;
+                    color: #006C35 !important;
+                    border-color: #006C35;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 }
 
-                /* إضافة أيقونة بسيطة لو حبيت (اختياري) */
-                .top-notice span::before {
-                    content: "⚠️";
-                    margin-left: 8px;
-                    font-size: 1rem;
+                /* أنيميشن بسيط لدخول الشريط */
+                @keyframes slideDown {
+                    from {
+                        transform: translateY(-100%);
+                    }
+
+                    to {
+                        transform: translateY(0);
+                    }
+                }
+
+                /* ضبط المسافات في الشاشات الصغيرة */
+                @media (max-width: 576px) {
+                    .engaz-alert-bar .container-fluid {
+                        flex-direction: column;
+                        gap: 5px;
+                        text-align: center;
+                    }
                 }
             </style>
         @endif
