@@ -242,7 +242,7 @@
                             <label class="form-label required">النوع</label>
                             <div class="input-group-icon">
                                 <i class="fas fa-venus-mars"></i>
-                                <select name="sex" class="form-select" required>
+                                <select name="sex" class="form-select" required style="width: 100%;">
                                     <option value="">اختر النوع</option>
                                     <option value="1">ذكر</option>
                                     <option value="2">أنثى</option>
