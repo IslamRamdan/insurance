@@ -97,30 +97,80 @@
         <div class="col-md-6 d-flex justify-content-md-end justify-content-start mt-3 mt-md-0">
 
             <!-- الرصيد -->
-            <div class="card shadow-sm mr-2 mb-0" style="border-radius: 12px;">
-                <div class="card-body d-flex align-items-center p-2 px-3">
+            <div class="card shadow-none border ml-2 mb-0 balance-card" style="border-radius: 12px; background: #f8f9fa;">
+                <div class="card-body d-flex align-items-center p-1 pr-3 pl-2">
 
-                    <div class="bg-info text-white d-flex align-items-center justify-content-center mr-2"
-                        style="width: 40px; height: 40px; border-radius: 10px;">
+                    <!-- أيقونة المحفظة بتصميم دائري ناعم -->
+                    <div class="balance-icon-container">
                         <i class="fas fa-wallet"></i>
                     </div>
 
-                    <div>
-                        <div style="font-size: 12px; color: #6c757d;">
-                            الرصيد
+                    <div class="mx-2">
+                        <div class="text-uppercase tracking-wider mb-0"
+                            style="font-size: 10px; color: #888; font-weight: 700; line-height: 1;">
+                            الرصيد المتاح
                         </div>
 
-                        <div class="font-weight-bold" style="font-size: 14px;">
-                            {{ auth()->user()->visa_balance ?? 0 }}
+                        <div class="d-flex align-items-center">
+                            <span class="font-weight-bold text-dark" style="font-size: 15px; letter-spacing: 0.5px;">
+                                {{ number_format(auth()->user()->visa_balance ?? 0) }}
+                                <small class="text-muted font-weight-normal" style="font-size: 10px;">نقطة</small>
+                            </span>
 
-                            <a href="{{ route('visa.recharge.view') }}" class="text-success ml-2" title="شحن الرصيد">
-                                <i class="fas fa-plus-circle"></i>
+                            <!-- زر الشحن بتصميم أنيق -->
+                            <a href="{{ route('visa.recharge.view') }}" class="recharge-btn ml-2" title="شحن الرصيد">
+                                <i class="fas fa-plus"></i>
                             </a>
                         </div>
                     </div>
 
                 </div>
             </div>
+
+            <style>
+                .balance-card {
+                    border: 1px solid #e3e6f0 !important;
+                    transition: all 0.3s ease;
+                }
+
+                .balance-card:hover {
+                    border-color: #006C35 !important;
+                    background: #fff !important;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+                }
+
+                .balance-icon-container {
+                    background-color: rgba(0, 108, 53, 0.1);
+                    /* أخضر شفاف */
+                    color: #006C35;
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                }
+
+                .recharge-btn {
+                    background-color: #006C35;
+                    color: white !important;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 6px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 10px;
+                    text-decoration: none !important;
+                    transition: transform 0.2s ease;
+                }
+
+                .recharge-btn:hover {
+                    transform: scale(1.1);
+                    background-color: #004d26;
+                }
+            </style>
 
             <!-- زر إضافة -->
             <a href="{{ route('visa_requests.create') }}" class="btn btn-success shadow-sm" style="border-radius: 10px;">

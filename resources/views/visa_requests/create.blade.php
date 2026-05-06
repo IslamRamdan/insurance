@@ -5,27 +5,6 @@
 @section('content_header')
     <div class="d-flex align-items-center justify-content-between">
         <h1><i class="fas fa-file-invoice mr-2 text-secondary"></i>طلبات التأشيرة</h1>
-
-        <div class="d-flex align-items-center gap-2">
-            <!-- عرض الرصيد بتصميم AdminLTE -->
-            <div class="info-box shadow-sm mb-0 mr-3" style="min-height: 50px; padding: 5px 15px;">
-                <span class="info-box-icon bg-info" style="width: 40px; height: 40px; font-size: 1rem;"><i
-                        class="fas fa-wallet"></i></span>
-                <div class="info-box-content p-1">
-                    <span class="info-box-text" style="font-size: 0.8rem;">الرصيد المتاح</span>
-                    <span class="info-box-number" style="font-size: 0.9rem;">
-                        {{ auth()->user()->visa_balance ?? 0 }} <small>تأشيرة</small>
-                        <a href="{{ route('visa.recharge.view') }}" class="text-success ml-2">
-                            <i class="fas fa-plus-circle"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-
-            <a href="{{ route('visa_requests.create') }}" class="btn btn-success elevation-2">
-                <i class="fas fa-plus mr-1"></i> تسجيل عميل جديد
-            </a>
-        </div>
     </div>
 @stop
 
