@@ -5,91 +5,73 @@
 @section('content_header')
     <div class="row mb-3">
         @if (auth()->user()->engaz_password == null || auth()->user()->engaz_email == null)
+            <div class="top-notice">
+                <span><b>ملاحظة:</b> يجب ربط حساب إنجاز الخاص بك لتفعيل خاصية الحجز التلقائي.</span>
+                <a href="#">اربط الآن</a>
+            </div>
             <style>
-                :root {
-                    --alert-bg: #fff5f5;
-                    --alert-border: #feb2b2;
-                    --alert-text: #9b2c2c;
-                    --alert-accent: #e53e3e;
-                }
-
-                .top-alert-bar {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    background: var(--alert-bg);
-                    border-bottom: 1px solid var(--alert-border);
-                    color: var(--alert-text);
-                    padding: 10px 0;
-                    z-index: 10000;
+                /* تنسيق شريط التنبيه العلوي */
+                .top-notice {
+                    background-color: #fff4e5;
+                    /* لون خلفية برتقالي فاتح جداً (تحذيري هادئ) */
+                    border-bottom: 1px solid #ffe2b9;
+                    /* خط سفلي لتحديد الشريط */
+                    padding: 12px 20px;
+                    text-align: center;
+                    font-size: 0.95rem;
+                    color: #664d03;
+                    /* لون نص بني داكن متناسق مع الخلفية */
+                    position: relative;
+                    z-index: 2000;
                     direction: rtl;
-                    font-family: 'Segoe UI', Tahoma, sans-serif;
-                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-                }
-
-                .container-flex {
+                    /* لضمان ترتيب العناصر من اليمين للشمال */
+                    font-family: 'Cairo', sans-serif;
+                    /* أو أي خط عربي تستخدمه */
                     display: flex;
-                    align-items: center;
                     justify-content: center;
-                    /* سنترة المحتوى بالكامل */
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 0 20px;
-                }
-
-                .message-group {
-                    display: flex;
                     align-items: center;
                     gap: 10px;
+                    /* مسافة بين النص والزرار */
                     flex-wrap: wrap;
-                    /* عشان لو الكلام كتير على الموبايل ينزل تحت بعضه */
-                    justify-content: center;
+                    /* عشان يظبط في الشاشات الصغيرة */
                 }
 
-                .warning-icon {
-                    width: 20px;
-                    height: 20px;
-                    color: var(--alert-accent);
+                /* تنسيق الكلمة المهمة */
+                .top-notice b {
+                    color: #e63946;
+                    /* لون أحمر هادئ للكلمة التنبيهية */
+                    font-weight: 700;
                 }
 
-                .message-group a {
-                    background-color: var(--alert-accent);
-                    color: white;
+                /* تنسيق زرار "اربط الآن" */
+                .top-notice a {
+                    color: #ffffff;
+                    background-color: #006C35;
+                    /* لون أخضر رسمي (نفس لون الهوية السعودية) */
+                    padding: 4px 16px;
+                    border-radius: 6px;
                     text-decoration: none;
-                    padding: 5px 18px;
-                    border-radius: 20px;
-                    /* شكل بيضاوي عصري */
+                    font-weight: 600;
                     font-size: 0.85rem;
-                    font-weight: bold;
-                    transition: 0.3s;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
 
-                .message-group a:hover {
-                    background-color: #b91c1c;
-                    transform: scale(1.05);
+                /* تأثير عند تمرير الماوس على الزرار */
+                .top-notice a:hover {
+                    background-color: #004d26;
+                    /* درجة أغمق قليلاً عند الهوفر */
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
                 }
 
-                body {
-                    padding-top: 60px;
+                /* إضافة أيقونة بسيطة لو حبيت (اختياري) */
+                .top-notice span::before {
+                    content: "⚠️";
+                    margin-left: 8px;
+                    font-size: 1rem;
                 }
             </style>
-
-            <div class="top-alert-bar" id="topAlert">
-                <div class="container-flex">
-                    <div class="message-group">
-                        <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path
-                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
-                            </path>
-                            <line x1="12" y1="9" x2="12" y2="13"></line>
-                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                        </svg>
-                        <span class="alert-msg"><b>تنبيه هام:</b> يجب أن تكتب بيانات حساب إنجاز لتتمكن من حجز النت.</span>
-                        <a href="{{ route('profile.edit') }}">أكمل البيانات الآن</a>
-                    </div>
-                </div>
-            </div>
         @endif
 
         <!-- العنوان -->
