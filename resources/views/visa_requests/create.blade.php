@@ -188,7 +188,7 @@
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label class="form-label required">مكان إصدار الجواز</label>
+                            <label class="form-label required">جهة إصدار الجواز</label>
                             <div class="input-group-icon">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <input type="text" name="passport_issue_place" class="form-control"
