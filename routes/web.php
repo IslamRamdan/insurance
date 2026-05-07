@@ -69,3 +69,6 @@ Route::post('/fawaterk/webhook', [VisaController::class, 'handleWebhook'])->name
 
 
 require __DIR__ . '/auth.php';
+Route::fallback(function () {
+    return redirect('/');
+});
