@@ -7,6 +7,7 @@ use App\Services\FawaterkService;
 use App\Models\VisaTransaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class VisaController extends Controller
 {
