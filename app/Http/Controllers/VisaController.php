@@ -166,46 +166,42 @@ class VisaController extends Controller
 
     public function handleWebhook(Request $request)
     {
-        // تسجيل الـ Payload للمتابعة
-        Log::info('Fawaterk Webhook Incoming:', $request->all());
-
         $fawaterkHash = $request->input('hashKey');
 
-        // سحب البيانات المطلوبة للـ Hash بالترتيب
         $invoiceId   = $request->input('invoice_id');
         $status      = $request->input('invoice_status');
         $paidAmount  = $request->input('paidAmount');
-        $customerEmail = data_get($request, 'customerData.customer_email'); // سحب الإيميل من داخل الأوبجكت
-        $providerKey = config('services.fawaterk.provider_key'); // المفتاح الخاص بك (FAWATERAK.7869)
+        $customerEmail = data_get($request, 'customerData.customer_email');
 
-        // تكوين السلسلة النصية للتشفير (بدون أي فواصل أو مسافات)
+        // الـ Key بتاعك اللي بيبدأ بـ FAWATERAK
+        $providerKey = "FAWATERAK.7869";
+
+        // الترتيب الصارم للفواتير: ID + Status + Amount + Email + Key
         $stringToHash = $invoiceId . $status . $paidAmount . $customerEmail . $providerKey;
         $generatedHash = hash('sha256', $stringToHash);
 
-        // التحقق من الـ Hash
         if ($generatedHash !== $fawaterkHash) {
             Log::error("Fawaterk Hash Mismatch!", [
+                'string_used' => $stringToHash,
                 'generated' => $generatedHash,
-                'received' => $fawaterkHash,
-                'string_used' => $stringToHash // سجل ده في الـ Log عشان تتأكد إن الترتيب صح
+                'received' => $fawaterkHash
             ]);
+            // نصيحة عشان "ترحم أمك": لو عايز العمليات تمشي والفلوس تتضاف حتى لو الـ Hash غلط 
+            // مؤقتاً امسح الـ return اللي تحت دي وخلي الكود يكمل.
             return response()->json(['error' => 'Invalid Hash'], 400);
         }
 
-        // إذا كان الـ Hash سليم والحالة مدفوعة
+        // شحن الرصيد
         if ($status === 'paid') {
             $transaction = VisaTransaction::where('fawaterk_invoice_id', $invoiceId)->first();
-
             if ($transaction && $transaction->status !== 'paid') {
-                DB::transaction(function () use ($transaction) {
-                    // تحديث حالة المعاملة
+                \DB::transaction(function () use ($transaction) {
                     $transaction->update(['status' => 'paid']);
-
-                    // شحن رصيد المستخدم المرتبط بالمعاملة
                     $user = $transaction->user;
                     if ($user) {
-                        $user->increment('visa_balance', $transaction->visa_count);
-                        Log::info("Balance Added: User {$user->id} updated by {$transaction->visa_count}");
+                        // $user->increment('visa_balance', $transaction->visa_count);
+                        $user->visa_balance = $user->visa_balance + $transaction->visa_count;
+                        $user->save();
                     }
                 });
             }
