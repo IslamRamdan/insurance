@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="mt-2 small text-secondary">
                                     إجمالي المبلغ المستحق:
-                                    <span id="total_price" class="font-weight-bold text-dark h6 mb-0">100</span>
+                                    <span id="total_price" class="font-weight-bold text-dark h6 mb-0">800</span>
                                     <span class="font-weight-bold text-dark">ج.م</span>
                                 </div>
                             </div>

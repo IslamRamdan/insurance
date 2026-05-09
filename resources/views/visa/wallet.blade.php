@@ -60,13 +60,13 @@
                             <span class="text-muted small font-weight-bold">إجمالي المبلغ المستحق</span>
                             <div class="mt-2">
                                 <span id="total_amount" class="h1 font-weight-bold mb-0"
-                                    style="color: #24292f; font-family: 'Segoe UI', sans-serif;">100</span>
+                                    style="color: #24292f; font-family: 'Segoe UI', sans-serif;">800</span>
                                 <span class="text-muted h5 font-weight-bold ml-1">ج.م</span>
                             </div>
                             <div class="mt-2 border-top pt-2">
                                 <small class="text-muted">
                                     <i class="fas fa-info-circle mr-1"></i> سعر التأشيرة الواحدة <span
-                                        class="badge badge-secondary">100 ج.م</span>
+                                        class="badge badge-secondary">800 ج.م</span>
                                 </small>
                             </div>
                         </div>
@@ -146,7 +146,7 @@
         $(document).ready(function() {
             const $qtyInput = $('#visa_qty');
             const $totalDisplay = $('#total_amount');
-            const pricePerVisa = 100;
+            const pricePerVisa = 800;
             const $form = $('#payment-form');
             const $loader = $('#loader');
             const $btnText = $('#btn-text');
