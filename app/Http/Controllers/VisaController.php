@@ -56,14 +56,26 @@ class VisaController extends Controller
 
         $data = $response->json();
 
-        if ($response->successful() && isset($data['data']['url'])) {
+        // if ($response->successful() && isset($data['data']['url'])) {
 
-            // --- إضافة الفاتورة في قاعدة البيانات هنا ---
+        //     // --- إضافة الفاتورة في قاعدة البيانات هنا ---
+        //     VisaTransaction::create([
+        //         'user_id'             => $user->id,
+        //         'amount'              => $totalPrice,
+        //         'visa_count'          => $request->input('visa_qty'),
+        //         'status'              => 'pending', // الحالة مبدئياً معلقة
+        //         'fawaterk_invoice_id' => $data['data']['invoice_id'],
+        //     ]);
+
+        //     return redirect()->away($data['data']['url']);
+        // }
+        if ($response->successful() && isset($data['data']['url'])) {
             VisaTransaction::create([
                 'user_id'             => $user->id,
                 'amount'              => $totalPrice,
                 'visa_count'          => $request->input('visa_qty'),
-                'status'              => 'pending', // الحالة مبدئياً معلقة
+                'status'              => 'pending',
+                // التعديل هنا: استخدام invoice_id وليس invoiceId
                 'fawaterk_invoice_id' => $data['data']['invoice_id'],
             ]);
 
