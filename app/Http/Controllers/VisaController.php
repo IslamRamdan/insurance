@@ -108,7 +108,7 @@ class VisaController extends Controller
 
                     // شحن الرصيد الفعلي
                     $user = $transaction->user;
-                    $user->increment('wallet_balance', $transaction->visa_count);
+                    $user->increment('visa_balance', $transaction->visa_count);
                 });
                 return response()->json(['status' => 'success'], 200);
             }
@@ -125,9 +125,6 @@ class VisaController extends Controller
             VisaTransaction::where('fawaterk_invoice_id', $invoiceId)
                 ->where('status', 'pending')
                 ->update(['status' => 'completed']);
-            $user = VisaTransaction::where('fawaterk_invoice_id', $invoiceId)->user;
-            $user->visa_balance = $user->visa_balance + VisaTransaction::where('fawaterk_invoice_id', $invoiceId)->visa_count;
-            $user->save();
         }
 
         return view('visa.status', [
