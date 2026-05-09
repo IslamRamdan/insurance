@@ -64,7 +64,7 @@ class VisaController extends Controller
                 'amount'              => $totalPrice,
                 'visa_count'          => $request->input('visa_qty'),
                 'status'              => 'pending', // الحالة مبدئياً معلقة
-                'fawaterk_invoice_id' => $data['data']['invoiceId'], // بنحفظ الـ ID اللي رجع من الـ API
+                'fawaterk_invoice_id' => $data['data']['invoice_id'],
             ]);
 
             return redirect()->away($data['data']['url']);
