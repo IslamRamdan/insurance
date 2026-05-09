@@ -199,10 +199,15 @@ class VisaController extends Controller
                     $transaction->update(['status' => 'paid']);
                     $user = $transaction->user;
                     if ($user) {
-                        // $user->increment('visa_balance', $transaction->visa_count);
                         $user->visa_balance = $user->visa_balance + $transaction->visa_count;
                         $user->save();
                     }
+                    \Log::info("User Balance Updated Successfully", [
+                        'user_id' => $user->id,
+                        'old_balance' => $user->getOriginal('visa_balance'), // الرصيد قبل الحفظ
+                        'new_balance' => $user->visa_balance,                // الرصيد بعد الحفظ
+                        'added_amount' => $transaction->visa_count
+                    ]);
                 });
             }
         }
