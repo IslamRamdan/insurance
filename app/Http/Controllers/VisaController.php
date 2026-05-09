@@ -94,71 +94,49 @@ class VisaController extends Controller
         $totalPrice = $request->input('visa_qty') * 100;
 
         $apiToken = env('FAWATERK_API_KEY');
-        $apiUrl = env('FAWATERK_URL');
+        $apiUrl = 'https://app.fawaterk.com/api/v2/createInvoiceLink';
 
-        // إرسال الطلب لفواتيرك
-        $response = Http::withOptions([
-            'verify' => false, // لتجنب مشاكل شهادة الأمان في بعض السيرفرات
-        ])->withToken($apiToken)
-            ->post($apiUrl, [
-                "cartTotal" => $totalPrice,
-                "currency"  => "EGP",
-                "customer"  => [
-                    "first_name" => $user->name ?? "User",
-                    "last_name"  => "Name",
-                    "email"      => $user->email ?? "erfa20045@gmail.com",
-                    "phone"      => $user->phone ?? "01228815901",
-                    "address"    => "Egypt"
-                ],
-                "redirectionUrls" => [
-                    "successUrl" => route('payment.success'),
-                    "failUrl"    => route('payment.fail'),
-                    "pendingUrl" => route('payment.fail')
-                ],
-                "cartItems" => [
-                    [
-                        "name"     => "شحن رصيد تأشيرات",
-                        "price"    => 100,
-                        "quantity" => (int)$request->input('visa_qty')
-                    ]
+        $response = Http::withToken($apiToken)->post($apiUrl, [
+            "cartTotal" => $totalPrice,
+            "currency"  => "EGP",
+            "customer"  => [
+                "first_name" => $user->name ?? "User",
+                "email"      => $user->email ?? "user@example.com",
+                "phone"      => $user->phone ?? "01228815901",
+            ],
+            "redirectionUrls" => [
+                "successUrl" => route('payment.success'),
+                "failUrl"    => route('payment.fail'),
+                "pendingUrl" => route('payment.fail')
+            ],
+            "cartItems" => [
+                [
+                    "name"     => "شحن رصيد تأشيرات",
+                    "price"    => 100,
+                    "quantity" => (int)$request->input('visa_qty')
                 ]
-            ]);
+            ]
+        ]);
 
         $data = $response->json();
 
         if ($response->successful() && isset($data['data']['url'])) {
-            // حفظ المعاملة في الداتابيز - التأكد من استخدام مفتاح invoice_id الصحيح
             VisaTransaction::create([
                 'user_id'             => $user->id,
                 'amount'              => $totalPrice,
                 'visa_count'          => $request->input('visa_qty'),
                 'status'              => 'pending',
+                // استخدمنا invoice_id للتوافق مع راد API فواتيرك
                 'fawaterk_invoice_id' => $data['data']['invoice_id'] ?? $data['data']['invoiceId'],
             ]);
 
             return redirect()->away($data['data']['url']);
         }
 
-        return back()->with('error', 'خطأ في الاتصال ببوابة الدفع: ' . ($data['message'] ?? 'تحقق من الإعدادات'));
+        return back()->with('error', 'خطأ في بوابة الدفع');
     }
 
-    public function paymentFail(Request $request)
-    {
-        $invoiceId = $request->query('invoice_id');
 
-        // تحديث الحالة لفاشلة في الداتابيز
-        if ($invoiceId) {
-            VisaTransaction::where('fawaterk_invoice_id', $invoiceId)
-                ->where('status', 'pending')
-                ->update(['status' => 'failed']);
-        }
-
-        return view('visa.status', [
-            'status'    => 'error',
-            'message'   => 'للأسف، فشلت عملية الدفع أو تم إلغاؤها.',
-            'invoiceId' => $invoiceId
-        ]);
-    }
 
     // public function handleWebhook(Request $request)
     // {
@@ -187,48 +165,35 @@ class VisaController extends Controller
 
     public function handleWebhook(Request $request)
     {
-        // 1. تسجيل البيانات الواردة لمراجعتها عند الحاجة
         Log::info('Fawaterk Webhook Payload:', $request->all());
 
         $invoiceId = $request->input('invoice_id');
         $status    = $request->input('invoice_status');
         $receivedHash = $request->header('hash_key');
 
-        // التحقق من وجود البيانات الأساسية
-        if (!$invoiceId || !$status) {
-            Log::error('Fawaterk Webhook: Missing essential data.');
-            return response()->json(['status' => 'error', 'message' => 'Missing data'], 400);
-        }
-
-        // 2. التحقق من الـ Hash لضمان الأمان (باستخدام الـ providerKey)
         $providerKey = env('FAWATERK_PROVIDER_KEY');
         $calculatedHash = hash('sha256', $invoiceId . $status . $providerKey);
 
+        // التحقق من الأمان
         if ($receivedHash !== $calculatedHash) {
-            Log::error('Fawaterk Webhook: Hash Mismatch!', [
-                'received' => $receivedHash,
-                'calculated' => $calculatedHash
-            ]);
-            return response()->json(['status' => 'error', 'message' => 'Invalid Hash'], 403);
+            Log::error('Fawaterk Webhook: Hash Mismatch!');
+            return response()->json(['status' => 'error'], 403);
         }
 
-        // 3. تحديث الرصيد إذا كانت الحالة مدفوعة (paid)
         if ($status === 'paid') {
             $transaction = VisaTransaction::where('fawaterk_invoice_id', $invoiceId)->first();
 
-            if ($transaction && $transaction->status !== 'completed_and_charged') {
+            // استخدمنا 'paid' لأنها موجودة في الـ enum عندك
+            if ($transaction && $transaction->status !== 'paid') {
                 DB::transaction(function () use ($transaction) {
-                    // تحديث حالة المعاملة
-                    $transaction->update(['status' => 'completed_and_charged']);
+                    $transaction->update(['status' => 'paid']);
 
-                    // شحن رصيد العميل الفعلي
                     $user = $transaction->user;
                     if ($user) {
                         $user->increment('visa_balance', $transaction->visa_count);
                         Log::info("Success: Balance added to User ID: {$user->id}");
                     }
                 });
-
                 return response()->json(['status' => 'success'], 200);
             }
         }
@@ -240,16 +205,31 @@ class VisaController extends Controller
     {
         $invoiceId = $request->query('invoice_id');
 
-        // تحديث الحالة في الداتابيز فوراً عند رجوع العميل
         if ($invoiceId) {
             VisaTransaction::where('fawaterk_invoice_id', $invoiceId)
                 ->where('status', 'pending')
-                ->update(['status' => 'completed']);
+                ->update(['status' => 'paid']); // استخدمنا 'paid' بدل 'completed' لحل مشكلة الـ Truncated
         }
 
         return view('visa.status', [
-            'status'    => 'success',
-            'message'   => 'تمت عملية الدفع بنجاح! تم شحن محفظتك.',
+            'status'  => 'success',
+            'message' => 'تمت العملية بنجاح!',
+            'invoiceId' => $invoiceId
+        ]);
+    }
+    public function paymentFail(Request $request)
+    {
+        $invoiceId = $request->query('invoice_id');
+
+        if ($invoiceId) {
+            VisaTransaction::where('fawaterk_invoice_id', $invoiceId)
+                ->where('status', 'pending')
+                ->update(['status' => 'failed']); // موجودة في الـ enum
+        }
+
+        return view('visa.status', [
+            'status'  => 'error',
+            'message' => 'فشلت عملية الدفع.',
             'invoiceId' => $invoiceId
         ]);
     }
