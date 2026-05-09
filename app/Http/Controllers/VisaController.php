@@ -92,7 +92,7 @@ class VisaController extends Controller
         ]);
 
         $user = auth()->user();
-        $totalPrice = $request->input('visa_qty') * 100;
+        $totalPrice = $request->input('visa_qty') * 10;
 
         $apiToken = env('FAWATERK_API_KEY');
         $apiUrl = 'https://app.fawaterk.com/api/v2/createInvoiceLink';
@@ -113,7 +113,7 @@ class VisaController extends Controller
             "cartItems" => [
                 [
                     "name"     => "شحن رصيد تأشيرات",
-                    "price"    => 100,
+                    "price"    => 10,
                     "quantity" => (int)$request->input('visa_qty')
                 ]
             ]
