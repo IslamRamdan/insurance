@@ -106,8 +106,8 @@ class VisaController extends Controller
                 "customer"  => [
                     "first_name" => $user->name ?? "User",
                     "last_name"  => "Name",
-                    "email"      => $user->email ?? "user@example.com",
-                    "phone"      => $user->phone ?? "01000000000",
+                    "email"      => $user->email ?? "erfa20045@gmail.com",
+                    "phone"      => $user->phone ?? "01228815901",
                     "address"    => "Egypt"
                 ],
                 "redirectionUrls" => [
