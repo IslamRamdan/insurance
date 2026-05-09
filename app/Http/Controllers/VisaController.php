@@ -166,40 +166,52 @@ class VisaController extends Controller
 
     public function handleWebhook(Request $request)
     {
-        Log::info('Fawaterk Webhook Payload:', $request->all());
+        // تسجيل الـ Payload للمتابعة
+        Log::info('Fawaterk Webhook Incoming:', $request->all());
 
-        $invoiceId = $request->input('invoice_id');
-        $status    = $request->input('invoice_status');
-        $receivedHash = $request->header('hash_key');
+        $fawaterkHash = $request->input('hashKey');
 
-        $providerKey = env('FAWATERK_PROVIDER_KEY');
-        $calculatedHash = hash('sha256', $invoiceId . $status . $providerKey);
+        // سحب البيانات المطلوبة للـ Hash بالترتيب
+        $invoiceId   = $request->input('invoice_id');
+        $status      = $request->input('invoice_status');
+        $paidAmount  = $request->input('paidAmount');
+        $customerEmail = data_get($request, 'customerData.customer_email'); // سحب الإيميل من داخل الأوبجكت
+        $providerKey = config('services.fawaterk.provider_key'); // المفتاح الخاص بك (FAWATERAK.7869)
 
-        // التحقق من الأمان
-        if ($receivedHash !== $calculatedHash) {
-            Log::error('Fawaterk Webhook: Hash Mismatch!');
-            return response()->json(['status' => 'error'], 403);
+        // تكوين السلسلة النصية للتشفير (بدون أي فواصل أو مسافات)
+        $stringToHash = $invoiceId . $status . $paidAmount . $customerEmail . $providerKey;
+        $generatedHash = hash('sha256', $stringToHash);
+
+        // التحقق من الـ Hash
+        if ($generatedHash !== $fawaterkHash) {
+            Log::error("Fawaterk Hash Mismatch!", [
+                'generated' => $generatedHash,
+                'received' => $fawaterkHash,
+                'string_used' => $stringToHash // سجل ده في الـ Log عشان تتأكد إن الترتيب صح
+            ]);
+            return response()->json(['error' => 'Invalid Hash'], 400);
         }
 
+        // إذا كان الـ Hash سليم والحالة مدفوعة
         if ($status === 'paid') {
             $transaction = VisaTransaction::where('fawaterk_invoice_id', $invoiceId)->first();
 
-            // استخدمنا 'paid' لأنها موجودة في الـ enum عندك
             if ($transaction && $transaction->status !== 'paid') {
                 DB::transaction(function () use ($transaction) {
+                    // تحديث حالة المعاملة
                     $transaction->update(['status' => 'paid']);
 
+                    // شحن رصيد المستخدم المرتبط بالمعاملة
                     $user = $transaction->user;
                     if ($user) {
                         $user->increment('visa_balance', $transaction->visa_count);
-                        Log::info("Success: Balance added to User ID: {$user->id}");
+                        Log::info("Balance Added: User {$user->id} updated by {$transaction->visa_count}");
                     }
                 });
-                return response()->json(['status' => 'success'], 200);
             }
         }
 
-        return response()->json(['status' => 'ignored'], 200);
+        return response()->json(['status' => 'success']);
     }
 
     public function paymentSuccess(Request $request)
