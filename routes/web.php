@@ -125,6 +125,6 @@ Route::post('/engaz/{id}', [VisaRequestController::class, 'engaz']);
 
 
 require __DIR__ . '/auth.php';
-// Route::fallback(function () {
-//     return redirect('/');
-// });
+Route::fallback(function () {
+    return redirect('/');
+});
