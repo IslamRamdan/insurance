@@ -142,32 +142,6 @@ class VisaController extends Controller
 
         return back()->with('error', 'خطأ في بوابة الدفع');
     }
-
-    // public function handleWebhook(Request $request)
-    // {
-    //     $data = $request->all();
-
-    //     if (isset($data['invoice_id']) && $data['invoice_status'] == 'paid') {
-
-    //         $transaction = VisaTransaction::where('fawaterk_invoice_id', $data['invoice_id'])->first();
-
-    //         // لو العملية موجودة ولم يتم شحن الرصيد من قبل (مثلاً بنعرف ده من حقل آخر أو لو لسه الحالة مش completed)
-    //         if ($transaction && $transaction->status !== 'completed_and_charged') {
-    //             DB::transaction(function () use ($transaction) {
-
-    //                 // تحديث الحالة لحالة نهائية تؤكد شحن الرصيد
-    //                 $transaction->update(['status' => 'completed_and_charged']);
-
-    //                 // شحن الرصيد الفعلي
-    //                 $user = $transaction->user;
-    //                 $user->increment('visa_balance', $transaction->visa_count);
-    //             });
-    //             return response()->json(['status' => 'success'], 200);
-    //         }
-    //     }
-    //     return response()->json(['status' => 'ignored'], 200);
-    // }
-
     public function handleWebhook(Request $request)
     {
         $invoiceId = $request->input('invoice_id');
@@ -225,12 +199,6 @@ class VisaController extends Controller
     public function paymentSuccess(Request $request)
     {
         $invoiceId = $request->query('invoice_id');
-
-        if ($invoiceId) {
-            VisaTransaction::where('fawaterk_invoice_id', $invoiceId)
-                ->where('status', 'pending')
-                ->update(['status' => 'paid']); // استخدمنا 'paid' بدل 'completed' لحل مشكلة الـ Truncated
-        }
 
         return view('visa.status', [
             'status'  => 'success',
