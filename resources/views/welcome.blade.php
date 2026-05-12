@@ -214,11 +214,9 @@
             <p>دعم فني مباشر</p>
         </div>
     </div>
-
-    <script>
-        < script type = "text/javascript" >
-            var Tawk_API = Tawk_API || {},
-                Tawk_LoadStart = new Date();
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {},
+            Tawk_LoadStart = new Date();
 
         // جزء ربط بيانات المستخدم المسجل
         @auth
@@ -238,7 +236,7 @@
             s0.parentNode.insertBefore(s1, s0);
         })();
     </script>
-    </script>
+
 </body>
 
 </html>
