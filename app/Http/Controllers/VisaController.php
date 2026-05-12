@@ -120,6 +120,7 @@ class VisaController extends Controller
         ]);
 
         $data = $response->json();
+        dd($data);
 
         if ($response->successful() && isset($data['data']['url'])) {
             VisaTransaction::create([
@@ -172,7 +173,7 @@ class VisaController extends Controller
 
         if ($status === 'paid') {
             // ابحث عن المعاملة
-            $transaction = \App\Models\VisaTransaction::where('fawaterk_invoice_id', $invoiceId)->first();
+            $transaction = VisaTransaction::where('fawaterk_invoice_id', $invoiceId)->first();
 
             // 2. لو المعاملة موجودة ولسه مش مدفوعة (عشان ما نكررش الشحن)
             if ($transaction && $transaction->status !== 'paid') {
