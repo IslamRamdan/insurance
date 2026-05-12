@@ -9,10 +9,10 @@ class VisaTransaction extends Model
     //
     protected $fillable = [
         'user_id',
+        'visa_count',
         'amount',
-        'visa_count', // أضفه هنا
+        'fawaterk_invoice_id',
         'status',
-        'fawaterk_invoice_id'
     ];
     public function user()
     {

@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'fawaterk' => [
+        'key' => env('FAWATERK_API_KEY'),
+        'url' => env('FAWATERK_URL'),
+    ],
 ];

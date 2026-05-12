@@ -94,8 +94,8 @@ class VisaController extends Controller
         $user = auth()->user();
         $totalPrice = $request->input('visa_qty') * 5;
 
-        $apiToken = env('FAWATERK_API_KEY');
-        $apiUrl = 'https://app.fawaterk.com/api/v2/createInvoiceLink';
+        $apiToken = config('services.fawaterk.key');
+        $apiUrl = config('services.fawaterk.url');
 
         $response = Http::withToken($apiToken)->post($apiUrl, [
             "cartTotal" => $totalPrice,
@@ -120,7 +120,6 @@ class VisaController extends Controller
         ]);
 
         $data = $response->json();
-        // dd($data);
 
         if ($response->successful() && isset($data['data']['url'])) {
             VisaTransaction::create([
@@ -132,6 +131,13 @@ class VisaController extends Controller
             ]);
 
             return redirect()->away($data['data']['url']);
+        } else {
+            Log::error('Fawaterk API Error', [
+                'response_status' => $response->status(),
+                'response_body' => $response->body(),
+            ]);
+
+            return back()->with('error', 'خطأ في الاتصال بالبوابة الحقيقية: ' . ($data['message'] ?? 'تحقق من الـ Token'));
         }
 
         return back()->with('error', 'خطأ في بوابة الدفع');
