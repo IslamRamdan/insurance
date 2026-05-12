@@ -156,6 +156,8 @@ class VisaRequestController extends Controller
 
     public function submit($id)
     {
+
+        set_time_limit(300); // 5 دقائق
         // 1. جلب بيانات العميل والطلب (تأكد من وجود العلاقات في الموديل)
         $customer = VisaRequest::with('visaApplication')->findOrFail($id);
         $application = $customer->visaApplication;
@@ -189,7 +191,17 @@ class VisaRequestController extends Controller
             3 => "الاسكندرية",
         ];
         $embassyCode = $consulates[$application->consulate_name] ?? "";
+        // في وحدة التحكم (Controller) بـ Laravel
+        $imagePath = storage_path('app/public/' . ($customer->image ?? ''));
+        $base64Image = null;
 
+        if (file_exists($imagePath)) {
+            $type = pathinfo($imagePath, PATHINFO_EXTENSION);
+            $data = file_get_contents($imagePath);
+            $base64Image = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        }
+
+        // أرسل هذا المتغير في المصفوفة
 
 
         // 4. تجهيز البيانات للإرسال
@@ -206,7 +218,10 @@ class VisaRequestController extends Controller
             'NumberOfEntries' => "0",
             'NumberEntryDay' => $numberEntryDay,
             'ResidencyInKSA' => $residencyInKSA,
-            'imageUrl' => asset('storage/' . ($customer->image ?? '')),
+            // في Laravel
+            // 'image_path' => storage_path('app/public/' . ($customer->image ?? '')),
+            'image_base64' => $base64Image,
+
             'AFIRSTNAME' => trim(implode(' ', array_filter([
                 $customer->a_first_name,
                 $customer->a_father,
@@ -246,10 +261,11 @@ class VisaRequestController extends Controller
             'Sex' => $customer->sex ?? "1",
             'JOB_OR_RELATION_Id' => $customer->job_or_relation_id ?? ""
         ];
+        // dd($data);
 
         // 5. إرسال الطلب عبر Http Client
         try {
-            $response = Http::timeout(60)->post('https://jury-channel-laboring.ngrok-free.dev/submit-all', $data);
+            $response = Http::timeout(0)->post('http://127.0.0.1:3000/submit-all', $data);
 
             if ($response->successful()) {
                 // return response()->json([
