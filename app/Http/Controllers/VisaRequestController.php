@@ -265,7 +265,7 @@ class VisaRequestController extends Controller
 
         // 5. إرسال الطلب عبر Http Client
         try {
-            $response = Http::timeout(0)->post('http://127.0.0.1:3000/submit-all', $data);
+            $response = Http::timeout(0)->post('https://jury-channel-laboring.ngrok-free.dev/submit-all', $data);
 
             if ($response->successful()) {
                 // return response()->json([
