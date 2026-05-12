@@ -190,7 +190,6 @@ class VisaController extends Controller
                     // شحن الرصيد لليوزر
                     $user = $transaction->user;
                     if ($user) {
-                        $oldBalance = $user->visa_balance;
                         $user->visa_balance = $user->visa_balance + $transaction->visa_count;
                         $user->save();
 
