@@ -9,7 +9,7 @@
                 <div class="container-fluid d-flex justify-content-center align-items-center gap-3">
                     <span class="alert-text">
                         <i class="fas fa-exclamation-triangle ml-2"></i>
-                        <strong>تنبيه:</strong> يجب ربط حساب إنجاز الخاص بك لتفعيل خاصية الحجز التلقائي.
+                        <strong>تنبيه:</strong> يجب ربط حساب إنجاز الخاص بك لتفعيل لتتمكن من الحجز .
                     </span>
                     <a href="{{ route('profile.edit') }}" class="btn-link-action">اربط الآن</a>
                 </div>
