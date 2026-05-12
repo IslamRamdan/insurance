@@ -116,9 +116,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/visas/{visa}/edit', [VisaApplicationController::class, 'edit']);
     Route::put('/visas/{visa}', [VisaApplicationController::class, 'update']);
+
+    Route::get('/submit-engaz/{id}', [VisaRequestController::class, 'submit'])->name('engaz.submit');
 });
 
 Route::post('/fawaterk/webhook', [VisaController::class, 'handleWebhook'])->name('fawaterk.webhook');
+Route::post('/engaz/{id}', [VisaRequestController::class, 'engaz']);
 
 
 require __DIR__ . '/auth.php';

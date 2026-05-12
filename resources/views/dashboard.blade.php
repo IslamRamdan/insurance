@@ -230,15 +230,20 @@
                                         <a href="{{ route('visa_requests.edit', $visa->id) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-edit mr-1"></i> تعديل
                                         </a>
-                                        {{-- @if (auth()->user()->engaz_password != null && auth()->user()->engaz_email != null)
-                                            <button class="btn btn-sm btn-success prepare-btn shadow-sm"
+                                        @if (auth()->user()->engaz_password != null && auth()->user()->engaz_email != null)
+                                            {{-- <button class="btn btn-sm btn-success prepare-btn shadow-sm"
                                                 title="تجهيز البيانات" data-customer='@json($visa)'
                                                 data-engaz-email="{{ $visa->user->engaz_email ?? '' }}"
                                                 data-engaz-password="{{ $visa->user->engaz_password ?? '' }}"
                                                 data-application='@json($visa->visaApplication ?? [])'>
                                                 <i class="fas fa-bolt"></i>
-                                            </button>
-                                        @endif --}}
+                                            </button> --}}
+
+                                            <a href="{{ route('engaz.submit', $visa->id) }}"
+                                                class="btn btn-sm btn-primary shadow-sm">
+                                                حجز
+                                            </a>
+                                        @endif
                                     @else
                                         <span class="badge badge-pill shadow-sm px-3 py-2"
                                             style="background-color: #006C35; color: white; font-weight: 600; font-size: 0.85rem;">
@@ -305,7 +310,7 @@
 @section('js')
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+    {{-- <script>
         document.addEventListener("DOMContentLoaded", function() {
             const buttons = document.querySelectorAll(".prepare-btn");
 
@@ -477,7 +482,7 @@
                 });
             });
         });
-    </script>
+    </script> --}}
     <script>
         $(document).ready(function() {
             // التحقق من وجود رسالة خطأ في الجلسة (Session)

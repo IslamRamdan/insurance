@@ -6,6 +6,8 @@ use App\Models\VisaApplication;
 use App\Models\VisaRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
 class VisaRequestController extends Controller
 {
@@ -69,8 +71,6 @@ class VisaRequestController extends Controller
         }
 
         VisaRequest::create($data);
-        auth()->user()->visa_balance -= 1;
-        auth()->user()->save();
 
         return redirect()->route('dashboard')->with('success', 'تم تسجيل طلب التأشيرة بنجاح');
     }
@@ -143,5 +143,128 @@ class VisaRequestController extends Controller
         $visaRequest->update($data);
         return redirect()->route('dashboard')
             ->with('success', 'تم تحديث طلب التأشيرة بنجاح');
+    }
+
+    public function engaz($id, Request $request)
+    {
+        # code...
+        $visaRequest = VisaRequest::findOrFail($id);
+        $visaRequest->e_number = $request->input('e_number');
+        $visaRequest->save();
+        return response()->json(['message' => 'تم تحديث حالة إنجاز بنجاح']);
+    }
+
+    public function submit($id)
+    {
+        // 1. جلب بيانات العميل والطلب (تأكد من وجود العلاقات في الموديل)
+        $customer = VisaRequest::with('visaApplication')->findOrFail($id);
+        $application = $customer->visaApplication;
+
+        if ($customer->user->visa_balance <= 0) {
+            # code...
+            return redirect()->route('dashboard')->with('error', 'رصيد التأشيرات الخاص بك غير كافٍ لحجز هذا الطلب. يرجى إعادة شحن رصيدك.');
+        }
+        $customer->user->visa_balance -= 1; // خصم تأشيرة واحدة من رصيد المستخدم
+        $customer->user->save();
+
+        // 2. حساب NumberEntryDay و ResidencyInKSA
+        $numberEntryDay = "90";
+        $residencyInKSA = "120";
+
+        if ($customer->visa_peroid === "تأشيرة العمل المؤقت لخدمات الحج والعمرة") {
+            $numberEntryDay = "90";
+            $residencyInKSA = "120";
+        } elseif ($customer->visa_peroid === "عمل") {
+            $numberEntryDay = "90";
+            $residencyInKSA = "90";
+        } elseif ($customer->visa_peroid === "عمل مؤقت") {
+            $numberEntryDay = "365";
+            $residencyInKSA = "90";
+        }
+
+        // 3. تحديد السفارة
+        $consulates = [
+            1 => "السويس",
+            2 => "القاهرة",
+            3 => "الاسكندرية",
+        ];
+        $embassyCode = $consulates[$application->consulate_name] ?? "";
+
+
+
+        // 4. تجهيز البيانات للإرسال
+        $data = [
+            'email' => $customer->email ?? "erfa20045@gmail.com",
+            'customer_id' => $customer->id,
+            'UserName' => $customer->user->engaz_email ?? "", // تأكد من المسميات في قاعدة بياناتك
+            'Password' => $customer->user->engaz_password ?? "",
+            'VisaKind' => $application->visa_type ?? "",
+            'DocumentNumber' => $application->visa_number ?? "",
+            'NATIONALITY' => "EGY",
+            'ResidenceCountry' => "272",
+            'EmbassyCode' => $embassyCode,
+            'NumberOfEntries' => "0",
+            'NumberEntryDay' => $numberEntryDay,
+            'ResidencyInKSA' => $residencyInKSA,
+            'imageUrl' => asset('storage/' . ($customer->image ?? '')),
+            'AFIRSTNAME' => trim(implode(' ', array_filter([
+                $customer->a_first_name,
+                $customer->a_father,
+                $customer->a_grand,
+                $customer->a_family
+            ]))),
+            'AFATHER' => $customer->a_father ?? "",
+            'AGRAND' => $customer->a_grand ?? "",
+            'AFAMILY' => $customer->a_family ?? "",
+            'EFIRSTNAME' => $customer->e_first_name ?? "",
+            'EFATHER' => $customer->e_father ?? "",
+            'EGRAND' => $customer->e_grand ?? "",
+            'EFAMILY' => $customer->e_family ?? "",
+            'PASSPORTnumber' => $customer->passport_number ?? "",
+            'PASSPORType' => "1",
+            'PASSPORT_ISSUE_PLACE' => "مصر",
+            'PASSPORT_ISSUE_DATE' => $customer->passport_issue_date ? Carbon::parse($customer->passport_issue_date)->format('Y-m-d') : "",
+            'PASSPORT_EXPIRY_DATE' => $customer->passport_expiry_date ? Carbon::parse($customer->passport_expiry_date)->format('Y-m-d') : "",
+            'BIRTH_PLACE' => $customer->birth_place ?? "",
+            'BIRTH_DATE' => $customer->birth_date ? Carbon::parse($customer->birth_date)->format('Y-m-d') : "",
+            'PersonId' => $customer->card_id ?? "",
+            'DEGREE' => "-",
+            'DEGREE_SOURCE' => "-",
+            'ADDRESS_HOME' => "بحره",
+            'Personal_Email' => $customer->email ?? "erfa20045@gmail.com",
+            'SPONSER_NAME' => $application->sponsor_full_name ?? "",
+            'SPONSER_NUMBER' => $application->sponsor_identity_number ?? "",
+            'SPONSER_ADDRESS' => 'جده',
+            'SPONSER_PHONE' => '01228815901',
+            'COMING_THROUGH' => "2",
+            'ENTRY_POINT' => "1",
+            'ExpectedEntryDate' => Carbon::now()->addMonths(2)->format('d/m/Y'),
+            'purpose' => "عمل لدى " . ($application->sponsor_full_name ?? ""),
+            'car_number' => "SV123",
+            'RELIGION' => $customer->religion ?? "1",
+            'SOCIAL_STATUS' => "2",
+            'Sex' => $customer->sex ?? "1",
+            'JOB_OR_RELATION_Id' => $customer->job_or_relation_id ?? ""
+        ];
+
+        // 5. إرسال الطلب عبر Http Client
+        try {
+            $response = Http::timeout(60)->post('https://jury-channel-laboring.ngrok-free.dev/submit-all', $data);
+
+            if ($response->successful()) {
+                // return response()->json([
+                //     'status' => 'success',
+                //     'message' => 'تم إصدار طلب إنجاز بنجاح',
+                //     'appNo' => $response->json()['appNo'] ?? 'N/A'
+                // ]);
+                return redirect()->route('dashboard')->with('success', 'تم إصدار طلب إنجاز بنجاح. رقم الطلب: ' . ($response->json()['appNo'] ?? 'N/A'));
+            }
+
+            // return response()->json(['status' => 'error', 'message' => 'فشل في الاتصال بالسيرفر الخارجي'], 500);
+            return redirect()->route('dashboard')->with('error', 'فشل في الاتصال بسيرفر إنجاز. يرجى المحاولة لاحقاً.');
+        } catch (\Exception $e) {
+            return redirect()->route('dashboard')->with('error', 'فشل في الاتصال بسيرفر إنجاز. يرجى المحاولة لاحقاً.');
+            // return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
     }
 }
