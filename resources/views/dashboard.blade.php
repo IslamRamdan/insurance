@@ -239,9 +239,12 @@
                                                 <i class="fas fa-bolt"></i>
                                             </button> --}}
 
-                                            <a href="{{ route('engaz.submit', $visa->id) }}"
+                                            <a href="{{ route('engaz.submit', $visa->id) }}" id="reserveBtn"
                                                 class="btn btn-sm btn-success prepare-btn shadow-sm">
-                                                حجز
+                                                <span id="btnText">حجز</span>
+                                                <span id="btnLoader" style="display: none;">
+                                                    <i class="fas fa-spinner fa-spin"></i> جاري التحويل...
+                                                </span>
                                             </a>
                                         @endif
                                     @else
@@ -509,6 +512,24 @@
                     confirmButtonColor: '#2ea44f' // أخضر GitHub
                 });
             @endif
+        });
+    </script>
+    <script>
+        document.getElementById('reserveBtn').addEventListener('click', function(e) {
+            // منع الضغط المتكرر
+            if (this.classList.contains('disabled')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // إخفاء النص الأصلي وإظهار اللودينج
+            document.getElementById('btnText').style.display = 'none';
+            document.getElementById('btnLoader').style.display = 'inline-block';
+
+            // إضافة كلاس تعطيل الزر برمجياً وبصرياً
+            this.classList.add('disabled');
+            this.style.pointerEvents = 'none';
+            this.style.opacity = '0.8';
         });
     </script>
 @stop
