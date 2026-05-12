@@ -92,7 +92,7 @@ class VisaController extends Controller
         ]);
 
         $user = auth()->user();
-        $totalPrice = $request->input('visa_qty') * 5;
+        $totalPrice = $request->input('visa_qty') * 800;
 
         $apiToken = config('services.fawaterk.key');
         $apiUrl = config('services.fawaterk.url');
@@ -113,7 +113,7 @@ class VisaController extends Controller
             "cartItems" => [
                 [
                     "name"     => "شحن رصيد تأشيرات",
-                    "price"    => 5,
+                    "price"    => 800,
                     "quantity" => (int)$request->input('visa_qty')
                 ]
             ]
