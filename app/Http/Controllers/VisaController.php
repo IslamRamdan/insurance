@@ -113,7 +113,7 @@ class VisaController extends Controller
             "cartItems" => [
                 [
                     "name"     => "شحن رصيد تأشيرات",
-                    "price"    => 800,
+                    "price"    => 5,
                     "quantity" => (int)$request->input('visa_qty')
                 ]
             ]
