@@ -201,6 +201,9 @@
                         <th style="width: 80px">الصورة</th>
                         <th>الاسم الكامل (عربي)</th>
                         <th>e number</th>
+                        @if (auth()->user()->email == 'eslam@gmail.com')
+                            <th>اسم الشركة</th>
+                        @endif
                         <th style="width: 150px">الإجراءات</th>
                     </tr>
                 </thead>
@@ -224,6 +227,13 @@
                             <td class="align-middle">
                                 <span class="badge badge-success">{{ $visa->e_number ?? 'في انتظار الحجز' }}</span>
                             </td>
+
+                            @if (auth()->user()->email == 'eslam@gmail.com')
+                                <td class="align-middle">
+                                    {{ $visa->user->name ?? 'غير محدد' }}
+                                </td>
+                            @endif
+
                             <td class="align-middle">
                                 <div class="btn-group">
                                     @if ($visa->e_number == null)
