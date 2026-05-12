@@ -120,7 +120,7 @@ class VisaController extends Controller
         ]);
 
         $data = $response->json();
-        dd($data);
+        // dd($data);
 
         if ($response->successful() && isset($data['data']['url'])) {
             VisaTransaction::create([
@@ -128,8 +128,7 @@ class VisaController extends Controller
                 'amount'              => $totalPrice,
                 'visa_count'          => $request->input('visa_qty'),
                 'status'              => 'pending',
-                // استخدمنا invoice_id للتوافق مع راد API فواتيرك
-                'fawaterk_invoice_id' => $data['data']['invoice_id'] ?? $data['data']['invoiceId'],
+                'fawaterk_invoice_id' => $data['data']['invoiceId'],
             ]);
 
             return redirect()->away($data['data']['url']);
