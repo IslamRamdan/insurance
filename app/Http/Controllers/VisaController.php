@@ -190,7 +190,11 @@ class VisaController extends Controller
                     // شحن الرصيد لليوزر
                     $user = $transaction->user;
                     if ($user) {
-                        $user->visa_balance = $user->visa_balance + $transaction->visa_count;
+                        $currentBalance = (int) $user->visa_balance;
+                        $addedAmount = (int) $transaction->visa_count;
+
+                        // عملية الجمع
+                        $user->visa_balance = $currentBalance + $addedAmount;
                         $user->save();
 
                         // 3. اطبع اليوزر في اللوج زي ما طلبت
