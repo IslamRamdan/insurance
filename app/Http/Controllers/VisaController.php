@@ -103,7 +103,7 @@ class VisaController extends Controller
             "customer"  => [
                 "first_name" => $user->name ?? "User",
                 "email"      => $user->email ?? "user@example.com",
-                "phone"      => $user->phone ?? "01228815901",
+                "phone"      => $user->phone ?? "01000000000",
             ],
             "redirectionUrls" => [
                 "successUrl" => route('payment.success'),

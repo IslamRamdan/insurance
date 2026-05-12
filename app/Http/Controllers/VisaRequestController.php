@@ -13,12 +13,6 @@ class VisaRequestController extends Controller
 {
     public function create()
     {
-        // الوصول الصحيح لبيانات المستخدم عبر دالة user()
-        if (auth()->user()->visa_balance <= 0) {
-            return redirect()
-                ->route('dashboard')
-                ->with('error', 'رصيد التأشيرات الخاص بك غير كافٍ لإنشاء طلب جديد. يرجى إعادة شحن رصيدك.');
-        }
         $visaApplications = VisaApplication::where("user_id", auth()->id())->get();
 
         return view('visa_requests.create', compact('visaApplications'));
