@@ -516,20 +516,27 @@
     </script>
     <script>
         document.getElementById('reserveBtn').addEventListener('click', function(e) {
-            // منع الضغط المتكرر
-            if (this.classList.contains('disabled')) {
-                e.preventDefault();
+            // 1. التحقق إذا كان الزر يحتوي على كلاس disabled أو تم الضغط عليه مسبقاً
+            if (this.classList.contains('disabled') || this.getAttribute('data-clicked') === 'true') {
+                e.preventDefault(); // منع الانتقال للرابط
                 return false;
             }
 
-            // إخفاء النص الأصلي وإظهار اللودينج
-            document.getElementById('btnText').style.display = 'none';
-            document.getElementById('btnLoader').style.display = 'inline-block';
+            // 2. وسم الزر لمنع النقرات المتتالية في أجزاء من الثانية
+            this.setAttribute('data-clicked', 'true');
 
-            // إضافة كلاس تعطيل الزر برمجياً وبصرياً
-            this.classList.add('disabled');
-            this.style.pointerEvents = 'none';
-            this.style.opacity = '0.8';
+            // 3. تغيير المحتوى البصري (إخفاء النص وإظهار اللودينج)
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            if (btnText) btnText.style.display = 'none';
+            if (btnLoader) btnLoader.style.display = 'inline-block';
+
+            // 4. تعطيل الزر نهائياً من الناحية البصرية والوظيفية
+            this.classList.add('disabled'); // كلاس Bootstrap للتعطيل البصري
+            this.style.pointerEvents = 'none'; // منع أي نقرات ماوس إضافية برمجياً
+            this.style.opacity = '0.7'; // زيادة الشفافية للتأكيد على التعطيل
+            this.style.cursor = 'not-allowed'; // تغيير شكل الماوس لعلامة "ممنوع"
         });
     </script>
 @stop

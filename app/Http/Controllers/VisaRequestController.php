@@ -267,19 +267,19 @@ class VisaRequestController extends Controller
         try {
             $response = Http::timeout(0)->post('https://jury-channel-laboring.ngrok-free.dev/submit-all', $data);
 
-            if ($response->successful()) {
+            if ($response->successful() && $response->json('success')) {
                 // return response()->json([
                 //     'status' => 'success',
                 //     'message' => 'تم إصدار طلب إنجاز بنجاح',
                 //     'appNo' => $response->json()['appNo'] ?? 'N/A'
                 // ]);
-                return redirect()->route('dashboard')->with('success', 'تم إصدار طلب إنجاز بنجاح. رقم الطلب: ' . ($response->json()['appNo'] ?? 'N/A'));
+                return redirect()->route('dashboard')->with('success', 'تم إصدار طلب إنجاز بنجاح. ' . ($response->json()['appNo'] ?? 'N/A'));
             }
 
             // return response()->json(['status' => 'error', 'message' => 'فشل في الاتصال بالسيرفر الخارجي'], 500);
-            return redirect()->route('dashboard')->with('error', 'فشل في الاتصال بسيرفر إنجاز. يرجى المحاولة لاحقاً.');
+            return redirect()->route('dashboard')->with('error', "تاكد اذا كان تم الحجز ام لا , واذا حدث مشكلة تواصل مع الدعم");
         } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', 'فشل في الاتصال بسيرفر إنجاز. يرجى المحاولة لاحقاً.');
+            return redirect()->route('dashboard')->with('error',  "تاكد اذا كان تم الحجز ام لا , واذا حدث مشكلة تواصل مع الدعم");
             // return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
