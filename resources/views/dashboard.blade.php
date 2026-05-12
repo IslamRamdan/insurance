@@ -240,7 +240,7 @@
                                             </button> --}}
 
                                             <a href="{{ route('engaz.submit', $visa->id) }}"
-                                                class="btn btn-sm btn-primary shadow-sm">
+                                                class="btn btn-sm btn-success prepare-btn shadow-sm">
                                                 حجز
                                             </a>
                                         @endif
