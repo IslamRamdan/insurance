@@ -60,8 +60,9 @@
             border: 1px solid #d1e7dd;
         }
 
-        .input-group-text {
-            border-radius: 0 10px 10px 0 !important;
+        /* تعديل الحواف لتتوافق مع اتجاه التصميم الداعم للغة العربية RTL */
+        .input-group-append .input-group-text {
+            border-radius: 10px 0 0 10px !important;
             color: #006C35;
             background: transparent;
         }
@@ -77,7 +78,7 @@
         {{-- الاسم بالكامل --}}
         <div class="input-group mb-3">
             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                value="{{ old('name') }}" placeholder="الاسم بالكامل" required autofocus>
+                value="{{ old('name') }}" placeholder="ما اسمك؟" required autofocus>
             <div class="input-group-append">
                 <div class="input-group-text"><span class="fas fa-user"></span></div>
             </div>
@@ -94,6 +95,30 @@
                 <div class="input-group-text"><span class="fas fa-envelope"></span></div>
             </div>
             @error('email')
+                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+            @enderror
+        </div>
+
+        {{-- اسم الشركة (الحقل الجديد الأول) --}}
+        <div class="input-group mb-3">
+            <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror"
+                value="{{ old('company_name') }}" placeholder="اسم الشركة (اختياري)">
+            <div class="input-group-append">
+                <div class="input-group-text"><span class="fas fa-building"></span></div>
+            </div>
+            @error('company_name')
+                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+            @enderror
+        </div>
+
+        {{-- رقم الهاتف (الحقل الجديد الثاني) --}}
+        <div class="input-group mb-3">
+            <input type="tel" name="phone_number" class="form-control @error('phone_number') is-invalid @enderror"
+                value="{{ old('phone_number') }}" placeholder="رقم الهاتف (مثال: 05xxxxxxxx)" required>
+            <div class="input-group-append">
+                <div class="input-group-text"><span class="fas fa-phone"></span></div>
+            </div>
+            @error('phone_number')
                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
             @enderror
         </div>

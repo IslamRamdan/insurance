@@ -27,6 +27,8 @@ class ProfileUpdateRequest extends FormRequest
                 'engaz_email' => ['nullable'],
                 'engaz_password' => ['nullable', 'string'],
             ],
+            'company_name' => ['nullable', 'string', 'max:255'], // اختياري، نص، بحد أقصى 255 حرف
+            'phone_number' => ['required', 'string', 'max:20'],
         ];
     }
 }

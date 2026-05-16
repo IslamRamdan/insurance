@@ -4,8 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VisaApplicationController;
 use App\Http\Controllers\VisaController;
 use App\Http\Controllers\VisaRequestController;
-use App\Models\VisaRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Models\VisaApplication;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -66,18 +65,11 @@ Route::get('/', function () {
 // });
 
 Route::get('/dashboard', function () {
-    if (Auth::check() && Auth::user()->email == "eslam@gmail.com") {
-        // لو Admin (الإيميل)
-        $visaRequests = VisaRequest::latest()->get();
-    } else {
-        // كل مستخدم يشوف طلباته فقط
-        $visaRequests = VisaRequest::where('user_id', Auth::id())
-            ->latest()
-            ->get();
-    }
-
-
-    return view('dashboard', compact('visaRequests'));
+    $applications = VisaApplication::where('user_id', auth()->id())
+        ->with(['requests'])
+        ->latest() // لترتيبها من الأحدث للأقدم
+        ->get();
+    return view('dashboard', compact("applications"));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -110,14 +102,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/visa/transactions', [VisaController::class, 'paymentFail'])->name('visa.transactions');
 
 
-    Route::get('/visas', [VisaApplicationController::class, 'index']);
-    Route::get('/visas/create', [VisaApplicationController::class, 'create']);
-    Route::post('/visas', [VisaApplicationController::class, 'store']);
+    Route::get('/visas', [VisaApplicationController::class, 'index'])->name('visas.index');
+    Route::get('/visas/create', [VisaApplicationController::class, 'create'])->name('visas.create');
+    Route::post('/visas', [VisaApplicationController::class, 'store'])->name('visas.store');
 
     Route::get('/visas/{visa}/edit', [VisaApplicationController::class, 'edit']);
     Route::put('/visas/{visa}', [VisaApplicationController::class, 'update']);
 
     Route::get('/submit-engaz/{id}', [VisaRequestController::class, 'submit'])->name('engaz.submit');
+    Route::get('/customers/{id}', [VisaApplicationController::class, 'customers'])->name('customers');
 });
 
 Route::post('/fawaterk/webhook', [VisaController::class, 'handleWebhook'])->name('fawaterk.webhook');
@@ -125,6 +118,7 @@ Route::post('/engaz/{id}', [VisaRequestController::class, 'engaz']);
 
 
 require __DIR__ . '/auth.php';
+
 Route::fallback(function () {
     return redirect('/');
 });

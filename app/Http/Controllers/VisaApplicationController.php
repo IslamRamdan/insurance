@@ -62,4 +62,15 @@ class VisaApplicationController extends Controller
 
         return view('visas.index', compact('visas'));
     }
+    public function customers($id)
+    {
+        # code...
+
+        $visa = VisaApplication::findOrFail($id);
+        if ($visa->user_id !== auth()->id()) {
+            abort(403);
+        }
+        $visaRequests = $visa->requests()->get();
+        return view('customers', compact('visaRequests', 'visa'));
+    }
 }

@@ -43,7 +43,8 @@
                     </div>
                 @endif
 
-                <form action="{{ route('visa_requests.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="myForm" action="{{ route('visa_requests.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <!-- الصور -->
                     <h5 class="section-title">
@@ -264,9 +265,8 @@
 
                         <!-- Submit Button -->
                         <div class="text-center mt-5">
-                            <button type="submit" class="btn btn-submit">
-                                <i class="fas fa-paper-plane me-2"></i>
-                                تسجيل الطلب
+                            <button type="submit" class="btn btn-submit" id="submitBtn">
+                                <i class="fas fa-paper-plane me-2"></i> تسجيل الطلب
                             </button>
                         </div>
                 </form>
@@ -797,5 +797,36 @@ profession`;
                 });
             }
         });
+    </script>
+    <script>
+        document.getElementById('myForm').addEventListener('submit', function() {
+            let btn = document.getElementById('submitBtn');
+
+            // تعطيل الزر وتغيير الأيقونة إلى أيقونة التحميل الدوارة
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
+        });
+    </script>
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {},
+            Tawk_LoadStart = new Date();
+
+        // جزء ربط بيانات المستخدم المسجل
+        @auth
+        Tawk_API.visitor = {
+            name: '{{ auth()->user()->name }}',
+            email: '{{ auth()->user()->email }}'
+        };
+        @endauth
+
+        (function() {
+            var s1 = document.createElement("script"),
+                s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/6a0352178acb811c36855663/1joefhbbp';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
     </script>
 @stop

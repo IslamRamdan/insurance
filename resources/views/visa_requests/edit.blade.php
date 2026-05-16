@@ -288,5 +288,27 @@
                 .catch(err => console.error("Error loading jobs:", err));
         });
     </script>
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {},
+            Tawk_LoadStart = new Date();
+
+        // جزء ربط بيانات المستخدم المسجل
+        @auth
+        Tawk_API.visitor = {
+            name: '{{ auth()->user()->name }}',
+            email: '{{ auth()->user()->email }}'
+        };
+        @endauth
+
+        (function() {
+            var s1 = document.createElement("script"),
+                s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/6a0352178acb811c36855663/1joefhbbp';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
 
 @stop

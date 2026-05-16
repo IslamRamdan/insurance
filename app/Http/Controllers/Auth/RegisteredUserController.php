@@ -29,15 +29,21 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // 1. التحقق من صحة البيانات القادمة من الفورم (تضمين الحقول الجديدة)
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'company_name' => ['nullable', 'string', 'max:255'], // اختياري، نص، بحد أقصى 255 حرف
+            'phone_number' => ['required', 'string', 'max:20'],  // مطلوب، نص (ليدعم علامة + أو الأصفار)، بحد أقصى 20 خانة
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // 2. إنشاء المستخدم وحفظ البيانات في قاعدة البيانات
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'company_name' => $request->company_name, // حفظ اسم الشركة
+            'phone_number' => $request->phone_number, // حفظ رقم الهاتف
             'password' => Hash::make($request->password),
         ]);
 

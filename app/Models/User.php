@@ -24,6 +24,8 @@ class User extends Authenticatable
         'visa_balance', // إضافة الحقل الجديد إلى fillable
         'engaz_email',
         'engaz_password',
+        'company_name',
+        'phone_number'
     ];
 
     /**

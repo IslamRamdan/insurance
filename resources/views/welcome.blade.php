@@ -176,7 +176,25 @@
 <body>
     <header>
         <div class="logo-area">
-            <div class="logo-text">إنجاز سكور</div>
+            <div class="logo-text d-flex align-items-center justify-content-center py-2">
+                <img src="{{ asset('logo.png') }}" alt="الشعار الرسمي" class="img-fluid saudi-logo">
+            </div>
+            <style>
+                .saudi-logo {
+                    max-height: 60px;
+                    /* يتحكم في ارتفاع الشعار ليكون متناسقاً مع الهيدر */
+                    width: auto;
+                    /* يحافظ على أبعاد الشعار الحقيقية بدون تمطيط */
+                    filter: drop-shadow(0px 2px 4px rgba(0, 108, 53, 0.15));
+                    /* يعطي ظل خفيف جداً باللون الأخضر السعودي لتبرز الصورة */
+                    transition: transform 0.3s ease;
+                }
+
+                /* تأثير تفاعلي خفيف عند تمرير الماوس فوق الشعار */
+                .saudi-logo:hover {
+                    transform: scale(1.02);
+                }
+            </style>
         </div>
         <div class="auth-buttons">
             <a href="{{ route('login') }}" class="btn btn-outline">تسجيل الدخول</a>
@@ -221,8 +239,8 @@
         // جزء ربط بيانات المستخدم المسجل
         @auth
         Tawk_API.visitor = {
-            name: '{{ auth()->user()->name }}',
-            email: '{{ auth()->user()->email }}'
+            name: 'guest',
+            email: 'guest@email.com'
         };
         @endauth
 
