@@ -114,7 +114,7 @@
         {{-- رقم الهاتف (الحقل الجديد الثاني) --}}
         <div class="input-group mb-3">
             <input type="tel" name="phone_number" class="form-control @error('phone_number') is-invalid @enderror"
-                value="{{ old('phone_number') }}" placeholder="رقم الهاتف (مثال: 05xxxxxxxx)" required>
+                value="{{ old('phone_number') }}" placeholder="01XXXXXXXX" required>
             <div class="input-group-append">
                 <div class="input-group-text"><span class="fas fa-phone"></span></div>
             </div>
