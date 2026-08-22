@@ -11,11 +11,11 @@ use Carbon\Carbon;
 
 class VisaRequestController extends Controller
 {
-    public function create()
+    public function create($visaId)
     {
         $visaApplications = VisaApplication::where("user_id", auth()->id())->get();
 
-        return view('visa_requests.create', compact('visaApplications'));
+        return view('visa_requests.create', compact('visaApplications', 'visaId'));
     }
 
     public function store(Request $request)
@@ -276,5 +276,61 @@ class VisaRequestController extends Controller
             return redirect()->route('dashboard')->with('error',  "تاكد اذا كان تم الحجز ام لا , واذا حدث مشكلة تواصل مع الدعم");
             // return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        if (auth()->user()->visa_balance < 1) {
+            return response()->json(['success' => false, 'message' => 'رصيدك غير كافي لتغيير الحالة. يرجى إعادة شحن رصيدك.'], 400);
+        } else {
+            auth()->user()->visa_balance -= 1;
+            auth()->user()->save();
+        }
+        $visaRequest = VisaRequest::findOrFail($id);
+        $visaRequest->update([
+            'status' => $request->input('status', 'admin')
+        ]);
+
+        Http::withHeaders([
+            'Authorization' => 'Bearer 714|qEOqBniIAUxUDwelNt6yR243dSFztZgBeEOmcm8Hb27a6438',
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post('https://bulk.whysms.com/api/v3/sms/send', [
+            'recipient' => '201228815901',
+            'sender_id' => 'Elmethaq Co',
+            'type' => 'plain',
+            'message' => 'تم تسجيل العميل : ' . $visaRequest->a_first_name . ' ' . $visaRequest->a_father . ' ' . $visaRequest->a_grand . ' ' . $visaRequest->a_family . ' يرجي مراجعة لوحة التحكم لمتابعة حالة الطلب',
+        ]);
+        Http::withHeaders([
+            'Authorization' => 'Bearer 714|qEOqBniIAUxUDwelNt6yR243dSFztZgBeEOmcm8Hb27a6438',
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post('https://bulk.whysms.com/api/v3/sms/send', [
+            'recipient' => '201222540002',
+            'sender_id' => 'Elmethaq Co',
+            'type' => 'plain',
+            'message' => 'تم تسجيل العميل : ' . $visaRequest->a_first_name . ' ' . $visaRequest->a_father . ' ' . $visaRequest->a_grand . ' ' . $visaRequest->a_family . ' يرجي مراجعة لوحة التحكم لمتابعة حالة الطلب',
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'تم التحديث بنجاح']);
+        }
+
+        return redirect()->back()->with('success', 'تم تغيير الحالة بنجاح');
+    }
+    public function updateENumber(Request $request, $id)
+    {
+        $request->validate([
+            'e_number' => 'nullable|string|max:255',
+        ]);
+
+        $visaRequest = VisaRequest::findOrFail($id);
+        $visaRequest->update([
+            'e_number' => $request->e_number
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم الحفظ بنجاح'
+        ]);
     }
 }

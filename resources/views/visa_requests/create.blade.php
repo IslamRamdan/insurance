@@ -13,15 +13,6 @@
     <div class="container main-container">
         <div class="form-card">
 
-            <!-- Header -->
-            <div class="form-header">
-                <div class="icon">
-                    <i class="fas fa-passport"></i>
-                </div>
-                <h2>تسجيل طلب تأشيرة</h2>
-                <p class="mb-0 mt-2" style="opacity: 0.9;">املأ البيانات التالية بدقة لإتمام طلب التأشيرة</p>
-            </div>
-
             <div class="form-body">
 
                 <!-- Alerts -->
@@ -105,15 +96,14 @@
                     <div class="form-group">
                         <label>التأشيرة</label>
 
-                        <select name="visa_application_id" class="form-control" required>
+                        <select name="visa_application_id" class="form-control"
+                            style="pointer-events: none; background-color: #e9ecef;" tabindex="-1" required>
                             <option value="">-- اختر التأشيرة --</option>
-
                             @foreach ($visaApplications as $visa)
-                                <option value="{{ $visa->id }}">
+                                <option value="{{ $visa->id }}" @selected(isset($visaId) && $visaId == $visa->id)>
                                     {{ $visa->sponsor_full_name }} - {{ $visa->visa_number }}
                                 </option>
                             @endforeach
-
                         </select>
                     </div>
 
@@ -192,8 +182,8 @@
                             <label class="form-label required">جهة إصدار الجواز</label>
                             <div class="input-group-icon">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <input type="text" name="passport_issue_place" class="form-control"
-                                    placeholder="القاهرة" required>
+                                <input type="text" name="passport_issue_place" class="form-control" placeholder="xx"
+                                    required>
                             </div>
                         </div>
 

@@ -121,8 +121,8 @@
                             @foreach ($fields as $field => $label)
                                 <div class="col-md-4 form-group">
                                     <label>{{ $label }}</label>
-                                    <input name="{{ $field }}" class="form-control"
-                                        value="{{ $customer->$field }}">
+                                    <input name="{{ $field }}" class="form-control" value="{{ $customer->$field }}"
+                                        {{ $field === 'passport_number' ? 'readonly' : '' }}>
                                 </div>
                             @endforeach
 

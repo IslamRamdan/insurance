@@ -79,7 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/engaz', [ProfileController::class, 'updateEngaz'])->name('profile.engaz.update');
 });
 
-Route::get('/visa-requests/create', [VisaRequestController::class, 'create'])
+Route::get('/visa-requests/create/{visa}', [VisaRequestController::class, 'create'])
     ->name('visa_requests.create');
 
 // تخزين الطلب الجديد
@@ -115,6 +115,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/fawaterk/webhook', [VisaController::class, 'handleWebhook'])->name('fawaterk.webhook');
 Route::post('/engaz/{id}', [VisaRequestController::class, 'engaz']);
+
+Route::post('/visa-requests/{id}/update-status', [VisaRequestController::class, 'updateStatus'])->name('visa-requests.update-status');
+Route::post('/visa-requests/{id}/update-e-number', [VisaRequestController::class, 'updateENumber'])->name('visa-requests.update-e-number');
 
 
 require __DIR__ . '/auth.php';

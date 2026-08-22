@@ -40,6 +40,8 @@ class VisaRequest extends Model
         // العلاقات
         'user_id',
         'visa_application_id',
+        'status',
+        'e_number',
     ];
 
     /**

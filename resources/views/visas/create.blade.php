@@ -3,11 +3,11 @@
 @section('title', 'إنشاء طلب تأشيرة')
 
 @section('content_header')
-    <div class="container-fluid">
+    <div class="container-fluid" dir="ltr">
         <div class="row mb-3">
-            <div class="col-sm-6">
+            <div class="col-sm-6 text-left">
                 <h1 class="m-0 text-bold" style="font-size: 1.8rem; color: #1a1a1a;">
-                    <i class="fas fa-file-signature text-success mr-2"></i> إنشاء طلب تأشيرة جديد
+                    <i class="fas fa-file-signature text-success ml-2"></i> إنشاء طلب تأشيرة جديد
                 </h1>
             </div>
         </div>
@@ -15,40 +15,42 @@
 @stop
 
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid" dir="ltr">
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm custom-alert" role="alert">
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-check-circle mr-3 fa-lg"></i>
+                    <i class="fas fa-check-circle ml-3 fa-lg"></i>
                     <div>
                         <h5 class="mb-0 font-weight-bold">تمت العملية بنجاح!</h5>
                         <span>{{ session('success') }}</span>
                     </div>
                 </div>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+                    style="right: auto; left: 1rem;">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         @endif
 
         <div class="card card-outline card-success shadow-lg border-0 mb-5">
-            <div class="card-header bg-white py-3">
-                <h3 class="card-title text-bold text-dark">
-                    <i class="fas fa-info-circle text-muted mr-1"></i> بيانات التأشيرة الأساسية
+            <div class="card-header bg-white py-3 text-left">
+                <h3 class="card-title text-bold text-dark float-left">
+                    <i class="fas fa-info-circle text-muted ml-1"></i> بيانات التأشيرة الأساسية
                 </h3>
             </div>
 
             <form method="POST" action="/visas">
                 @csrf
-                <div class="card-body p-4">
+                <div class="card-body p-4 text-left">
                     <div class="row">
                         <!-- اسم الكفيل -->
                         <div class="form-group col-md-6 mb-4">
                             <label class="input-label">اسم الكفيل الكامل</label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light border-left-0"><i class="fas fa-user"></i></span>
+                                    <span class="input-group-text bg-light border-right-0"><i
+                                            class="fas fa-user"></i></span>
                                 </div>
                                 <input type="text" name="sponsor_full_name" class="form-control custom-input"
                                     placeholder="مثال: شركة إنجاز العالمية" required>
@@ -60,7 +62,7 @@
                             <label class="input-label">رقم الهوية / السجل الضريبي</label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light border-left-0"><i
+                                    <span class="input-group-text bg-light border-right-0"><i
                                             class="fas fa-id-card"></i></span>
                                 </div>
                                 <input type="text" name="sponsor_identity_number"
@@ -84,7 +86,7 @@
                             <label class="input-label">رقم التأشيرة</label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light border-left-0"><i
+                                    <span class="input-group-text bg-light border-right-0"><i
                                             class="fas fa-hashtag"></i></span>
                                 </div>
                                 <input type="text" name="visa_number" class="form-control custom-input text-left"
@@ -106,12 +108,12 @@
 
                 <div class="card-footer bg-light py-4">
                     <div class="row align-items-center">
-                        <div class="col-md-6 text-muted small">
-                            <i class="fas fa-shield-alt mr-1"></i> يتم تشفير البيانات وحفظها بشكل آمن وفقاً لسياسة الخصوصية.
+                        <div class="col-md-6 text-muted small text-left">
+                            <i class="fas fa-shield-alt ml-1"></i> يتم تشفير البيانات وحفظها بشكل آمن وفقاً لسياسة الخصوصية.
                         </div>
                         <div class="col-md-6 text-right">
                             <button type="submit" class="btn btn-success px-5 shadow-sm btn-lg font-weight-bold">
-                                <i class="fas fa-save mr-2"></i> حفظ الطلب والبدء
+                                <i class="fas fa-save ml-2"></i> حفظ الطلب والبدء
                             </button>
                         </div>
                     </div>
@@ -148,7 +150,7 @@
         .custom-input,
         .custom-select-input {
             height: 48px !important;
-            border-radius: 10px !important;
+            border-radius: 0 10px 10px 0 !important;
             border: 1px solid #e1e1e1 !important;
             font-weight: 500;
             transition: all 0.3s ease;
@@ -162,15 +164,10 @@
         }
 
         .input-group-text {
-            border-radius: 0 10px 10px 0 !important;
-            /* للـ RTL */
+            border-radius: 10px 0 0 10px !important;
+            /* للـ LTR */
             border: 1px solid #e1e1e1;
             color: #006C35;
-        }
-
-        /* تعديل الحواف في وضع RTL */
-        [dir="rtl"] .custom-input {
-            border-radius: 10px 0 0 10px !important;
         }
 
         /* زرار الحفظ */
@@ -192,25 +189,14 @@
             background-color: #d4edda;
             color: #155724;
         }
-
-        /* تنسيقات إضافية للغة العربية */
-        .mr-2,
-        .mr-3 {
-            margin-left: 0.5rem !important;
-            margin-right: 0 !important;
-        }
     </style>
     <style>
         /* تغيير لون الخلفية والنص للعنصر النشط في القائمة الجانبية */
         .nav-sidebar .nav-item .nav-link.active {
             background-color: #006C35 !important;
-            /* اللون الأخضر */
             color: #ffffff !important;
-            /* لون النص أبيض */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            /* ظل خفيف لإبراز العنصر */
             border-radius: 8px;
-            /* حواف مستديرة لتناسب الديزاين الجديد */
         }
 
         /* تغيير لون الأيقونة داخل العنصر النشط */
@@ -225,12 +211,12 @@
         }
     </style>
 @stop
+
 @section('js')
     <script type="text/javascript">
         var Tawk_API = Tawk_API || {},
             Tawk_LoadStart = new Date();
 
-        // جزء ربط بيانات المستخدم المسجل
         @auth
         Tawk_API.visitor = {
             name: '{{ auth()->user()->name }}',

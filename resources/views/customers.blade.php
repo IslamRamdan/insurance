@@ -3,6 +3,86 @@
 @section('title', 'طلبات التأشيرة')
 
 @section('content_header')
+    @if (auth()->check() && (auth()->user()->engaz_password == null || auth()->user()->engaz_email == null))
+        <div class="engaz-alert-bar">
+            <div class="container-fluid d-flex justify-content-center align-items-center gap-3">
+                <span class="alert-text">
+                    <i class="fas fa-exclamation-triangle ml-2"></i>
+                    <strong>تنبيه:</strong> يجب ربط حساب إنجاز الخاص بك لتتمكن من الحجز .
+                </span>
+                <a href="{{ route('profile.edit') }}" class="btn-link-action">اربط الآن</a>
+            </div>
+        </div>
+        <style>
+            .engaz-alert-bar {
+                background-color: #fff3cd;
+                /* أصفر تحذيري هادئ */
+                border-bottom: 1px solid #ffeeba;
+                padding: 8px 0;
+                /* تقليل الارتفاع ليكون أنحف */
+                width: 100%;
+                position: sticky;
+                /* يظل ظاهراً عند التمرير */
+                top: 0;
+                z-index: 1050;
+                /* أعلى من الـ Navbar */
+                direction: rtl;
+                font-family: 'Cairo', sans-serif;
+                animation: slideDown 0.5s ease-out;
+            }
+
+            .alert-text {
+                color: #856404;
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+
+            .alert-text i {
+                color: #dc3545;
+                /* لون الأيقونة أحمر للتنبيه */
+            }
+
+            .btn-link-action {
+                background-color: #006C35;
+                color: #ffffff !important;
+                padding: 3px 15px;
+                border-radius: 20px;
+                /* شكل كبسولة عصري */
+                font-size: 0.8rem;
+                font-weight: 700;
+                text-decoration: none !important;
+                transition: 0.3s;
+                border: 1px solid transparent;
+            }
+
+            .btn-link-action:hover {
+                background-color: #ffffff;
+                color: #006C35 !important;
+                border-color: #006C35;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            /* أنيميشن بسيط لدخول الشريط */
+            @keyframes slideDown {
+                from {
+                    transform: translateY(-100%);
+                }
+
+                to {
+                    transform: translateY(0);
+                }
+            }
+
+            /* ضبط المسافات في الشاشات الصغيرة */
+            @media (max-width: 576px) {
+                .engaz-alert-bar .container-fluid {
+                    flex-direction: column;
+                    gap: 5px;
+                    text-align: center;
+                }
+            }
+        </style>
+    @endif
     <div class="row mb-3">
         <!-- العنوان -->
         <div class="col-md-6 d-flex align-items-center">
@@ -11,6 +91,8 @@
                 {{ $visa->visa_number }})
             </h1>
         </div>
+
+
 
         <!-- اليمين -->
         <div class="col-md-6 d-flex justify-content-md-end justify-content-start mt-3 mt-md-0">
@@ -92,7 +174,8 @@
             </style>
 
             <!-- زر إضافة -->
-            <a href="{{ route('visa_requests.create') }}" class="btn btn-success shadow-sm" style="border-radius: 10px;">
+            <a href="{{ route('visa_requests.create', $visa->id) }}" class="btn btn-success shadow-sm"
+                style="border-radius: 10px;">
 
                 <i class="fas fa-user-plus mr-1"></i>
                 تسجيل عميل
@@ -106,11 +189,7 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <h3 class="card-title">قائمة المسجلين</h3>
-            <div class="card-tools">
-                <a href="" class="btn btn-tool text-primary">
-                    <i class="fas fa-history mr-1"></i> سجل المعاملات
-                </a>
-            </div>
+
         </div>
 
         <div class="card-body p-0">
@@ -146,33 +225,65 @@
 
                             <td class="align-middle">
                                 <div class="btn-group">
-                                    @if ($visa->e_number == null)
-                                        <a href="{{ route('visa_requests.edit', $visa->id) }}" class="btn btn-sm btn-info">
-                                            <i class="fas fa-edit mr-1"></i> تعديل
-                                        </a>
-                                        @if (auth()->user()->engaz_password != null && auth()->user()->engaz_email != null)
-                                            {{-- <button class="btn btn-sm btn-success prepare-btn shadow-sm"
-                                                title="تجهيز البيانات" data-customer='@json($visa)'
-                                                data-engaz-email="{{ $visa->user->engaz_email ?? '' }}"
-                                                data-engaz-password="{{ $visa->user->engaz_password ?? '' }}"
-                                                data-application='@json($visa->visaApplication ?? [])'>
-                                                <i class="fas fa-bolt"></i>
-                                            </button> --}}
-
-                                            <a href="{{ route('engaz.submit', $visa->id) }}" id="reserveBtn"
-                                                class="btn btn-sm btn-success prepare-btn shadow-sm">
-                                                <span id="btnText">حجز</span>
-                                                <span id="btnLoader" style="display: none;">
-                                                    <i class="fas fa-spinner fa-spin"></i> جاري التحويل...
-                                                </span>
-                                            </a>
-                                        @endif
-                                    @else
+                                    @if (auth()->check() && (auth()->user()->engaz_password == null || auth()->user()->engaz_email == null))
                                         <span class="badge badge-pill shadow-sm px-3 py-2"
-                                            style="background-color: #006C35; color: white; font-weight: 600; font-size: 0.85rem;">
-                                            <i class="fas fa-check-circle mr-1"></i> تم الحجز
+                                            style="background-color: #dc3545; color: white; font-weight: 600; font-size: 0.85rem;">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> يجب ربط حساب إنجاز
                                         </span>
+                                    @else
+                                        @if (auth()->user()?->email !== 'eslam@gmail.com')
+                                            @if ($visa->status == 'pending')
+                                                <a href="{{ route('visa_requests.edit', $visa->id) }}"
+                                                    class="btn btn-sm btn-info">
+                                                    <i class="fas fa-edit mr-1"></i> تعديل
+                                                </a>
+
+                                                <button class="btn btn-sm btn-success prepare-btn shadow-sm"
+                                                    data-id="{{ $visa->id }}">
+                                                    <i class="fas fa-bolt"></i> ارسال البيانات
+                                                </button>
+                                            @else
+                                                @if ($visa->e_number == null)
+                                                    <span class="badge badge-pill shadow-sm px-3 py-2"
+                                                        style="background-color: #17a2b8; color: white; font-weight: 600; font-size: 0.85rem;">
+                                                        <i class="fas fa-check-circle mr-1"></i> تم ارسال البيانات
+                                                    </span>
+                                                @else
+                                                    <span class="badge badge-pill shadow-sm px-3 py-2"
+                                                        style="background-color: #17a2b8; color: white; font-weight: 600; font-size: 0.85rem;">
+                                                        <i class="fas fa-check-circle mr-1"></i> تم الحجز بنجاح
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        @else
+                                            <div
+                                                class="d-inline-flex align-items-center bg-light p-1 rounded-lg border shadow-sm">
+                                                <!-- زر تعديل -->
+                                                <a href="{{ route('visa_requests.edit', $visa->id) }}"
+                                                    class="btn btn-sm btn-outline-info border-0 rounded-circle mr-2"
+                                                    title="تعديل">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+
+                                                <!-- مجموعة الإدخال للـ E-Number -->
+                                                <div class="input-group input-group-sm" style="width: 200px;">
+                                                    <input type="text" id="e_number_input_{{ $visa->id }}"
+                                                        class="form-control border-0 bg-white" placeholder="E-Number..."
+                                                        value="{{ $visa->e_number ?? '' }}" style="font-size: 0.85rem;">
+
+                                                    <div class="input-group-append">
+                                                        <button
+                                                            class="btn btn-primary btn-sm px-3 update-e-number-btn font-weight-bold"
+                                                            type="button" data-id="{{ $visa->id }}">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @endif
+
+
                                 </div>
                             </td>
                         </tr>
@@ -435,31 +546,97 @@
         });
     </script>
     <script>
-        document.getElementById('reserveBtn').addEventListener('click', function(e) {
-            // 1. التحقق إذا كان الزر يحتوي على كلاس disabled أو تم الضغط عليه مسبقاً
-            if (this.classList.contains('disabled') || this.getAttribute('data-clicked') === 'true') {
-                e.preventDefault(); // منع الانتقال للرابط
-                return false;
-            }
+        // document.getElementById('reserveBtn').addEventListener('click', function(e) {
+        //     // 1. التحقق إذا كان الزر يحتوي على كلاس disabled أو تم الضغط عليه مسبقاً
+        //     if (this.classList.contains('disabled') || this.getAttribute('data-clicked') === 'true') {
+        //         e.preventDefault(); // منع الانتقال للرابط
+        //         return false;
+        //     }
 
-            // 2. وسم الزر لمنع النقرات المتتالية في أجزاء من الثانية
-            this.setAttribute('data-clicked', 'true');
+        //     // 2. وسم الزر لمنع النقرات المتتالية في أجزاء من الثانية
+        //     this.setAttribute('data-clicked', 'true');
 
-            // 3. تغيير المحتوى البصري (إخفاء النص وإظهار اللودينج)
-            const btnText = document.getElementById('btnText');
-            const btnLoader = document.getElementById('btnLoader');
+        //     // 3. تغيير المحتوى البصري (إخفاء النص وإظهار اللودينج)
+        //     const btnText = document.getElementById('btnText');
+        //     const btnLoader = document.getElementById('btnLoader');
 
-            if (btnText) btnText.style.display = 'none';
-            if (btnLoader) btnLoader.style.display = 'inline-block';
+        //     if (btnText) btnText.style.display = 'none';
+        //     if (btnLoader) btnLoader.style.display = 'inline-block';
 
-            // 4. تعطيل الزر نهائياً من الناحية البصرية والوظيفية
-            this.classList.add('disabled'); // كلاس Bootstrap للتعطيل البصري
-            this.style.pointerEvents = 'none'; // منع أي نقرات ماوس إضافية برمجياً
-            this.style.opacity = '0.7'; // زيادة الشفافية للتأكيد على التعطيل
-            this.style.cursor = 'not-allowed'; // تغيير شكل الماوس لعلامة "ممنوع"
+        //     // 4. تعطيل الزر نهائياً من الناحية البصرية والوظيفية
+        //     this.classList.add('disabled'); // كلاس Bootstrap للتعطيل البصري
+        //     this.style.pointerEvents = 'none'; // منع أي نقرات ماوس إضافية برمجياً
+        //     this.style.opacity = '0.7'; // زيادة الشفافية للتأكيد على التعطيل
+        //     this.style.cursor = 'not-allowed'; // تغيير شكل الماوس لعلامة "ممنوع"
+        // });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.prepare-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    let requestId = this.getAttribute('data-id');
+
+                    // إظهار مؤشر التحميل أثناء تنفيذ الطلب
+                    Swal.fire({
+                        title: 'جاري المعالجة...',
+                        text: 'يرجى الانتظار قليلاً',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/visa-requests/${requestId}/update-status`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                status: 'admin'
+                            })
+                        })
+                        .then(async response => {
+                            const data = await response.json();
+
+                            if (response.ok && data.success) {
+                                // رسالة النجاح
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'تم بنجاح!',
+                                    text: data.message || 'تمت العملية بنجاح.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                // رسالة الخطأ (مثل خطأ الرصيد)
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'عذراً...',
+                                    text: data.message ||
+                                        'حدث خطأ أثناء تنفيذ الطلب',
+                                    confirmButtonText: 'حسناً',
+                                    confirmButtonColor: '#d33'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطأ في الاتصال',
+                                text: 'تعذر الاتصال بالسيرفر، يرجى المحاولة لاحقاً.',
+                                confirmButtonText: 'موافق'
+                            });
+                        });
+                });
+            });
         });
     </script>
-
+    {{-- 
     <script>
         function detectDevTools() {
             const start = performance.now();
@@ -484,7 +661,7 @@
         }
 
         setInterval(detectDevTools, 1000);
-    </script>
+    </script> --}}
 
     <!-- Start of Tawk.to Script -->
     <script type="text/javascript">
@@ -510,4 +687,36 @@
         })();
     </script>
     <!-- End of Tawk.to Script -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.update-e-number-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    let requestId = this.getAttribute('data-id');
+                    let eNumberValue = document.getElementById(`e_number_input_${requestId}`).value;
+
+                    fetch(`/visa-requests/${requestId}/update-e-number`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                e_number: eNumberValue
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('تم تحديث E-Number بنجاح!');
+                            } else {
+                                alert('حدث خطأ أثناء التحديث');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
 @stop

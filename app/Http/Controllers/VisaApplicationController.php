@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\VisaApplication;
+use App\Models\VisaRequest;
 use Illuminate\Http\Request;
 
 class VisaApplicationController extends Controller
@@ -70,7 +71,11 @@ class VisaApplicationController extends Controller
         if ($visa->user_id !== auth()->id()) {
             abort(403);
         }
-        $visaRequests = $visa->requests()->get();
+        if (auth()->user()->email == 'eslam@gmail.com') {
+            $visaRequests = VisaRequest::where(['status' => 'admin', 'e_number' => null])->get();
+        } else {
+            $visaRequests = $visa->requests()->get();
+        }
         return view('customers', compact('visaRequests', 'visa'));
     }
 }
