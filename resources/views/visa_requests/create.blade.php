@@ -771,7 +771,7 @@ profession`;
                     console.error("Error parsing JSON:", error);
                     Swal.fire({
                         title: "خطأ في معالجة البيانات",
-                        text: "الرجاء المحاولة مرة أخرى",
+                        text: "قم بكتابة البيانات يدويا",
                         icon: "error",
                         confirmButtonText: "حسناً"
                     });
@@ -781,7 +781,7 @@ profession`;
                 console.error("❌ Error:", error);
                 Swal.fire({
                     title: "حدث خطأ",
-                    text: "حدث خطأ أثناء تحليل الصورة، الرجاء المحاولة مرة أخرى",
+                    text: "قم بكتابة البيانات يدويا",
                     icon: "error",
                     confirmButtonText: "حسناً"
                 });
