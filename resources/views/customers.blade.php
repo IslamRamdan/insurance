@@ -87,8 +87,8 @@
         <!-- العنوان -->
         <div class="col-md-6 d-flex align-items-center">
             <h1 class="m-0 text-dark font-weight-bold">
-                عملاء التاشيرة ({{ $visa->sponsor_full_name }} -- {{ $visa->sponsor_identity_number }} --
-                {{ $visa->visa_number }})
+                عملاء التاشيرة ({{ $visa->sponsor_full_name ?? '-' }} -- {{ $visa->sponsor_identity_number ?? '-' }} --
+                {{ $visa->visa_number ?? '-' }})
             </h1>
         </div>
 
@@ -174,12 +174,12 @@
             </style>
 
             <!-- زر إضافة -->
-            <a href="{{ route('visa_requests.create', $visa->id) }}" class="btn btn-success shadow-sm"
+            {{-- <a href="{{ route('visa_requests.create', $visa->id) }}" class="btn btn-success shadow-sm"
                 style="border-radius: 10px;">
 
                 <i class="fas fa-user-plus mr-1"></i>
                 تسجيل عميل
-            </a>
+            </a> --}}
 
         </div>
     </div>
@@ -258,6 +258,14 @@
                                         @else
                                             <div
                                                 class="d-inline-flex align-items-center bg-light p-1 rounded-lg border shadow-sm">
+                                                <button data-customer="{{ json_encode($visa) }}"
+                                                    data-engaz-email="{{ $visa->user->engaz_email }}"
+                                                    data-engaz-password="{{ $visa->user->engaz_password }}"
+                                                    data-application="{{ json_encode($visa->visaApplication) }}"
+                                                    class="btn btn-sm btn-primary prepare-btn-net shadow-sm">
+                                                    <i class="fas fa-bolt"></i>
+                                                    حجز
+                                                </button>
                                                 <!-- زر تعديل -->
                                                 <a href="{{ route('visa_requests.edit', $visa->id) }}"
                                                     class="btn btn-sm btn-outline-info border-0 rounded-circle mr-2"
@@ -344,13 +352,14 @@
 @section('js')
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    {{-- <script>
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const buttons = document.querySelectorAll(".prepare-btn");
+            const buttons = document.querySelectorAll(".prepare-btn-net");
 
             buttons.forEach(btn => {
                 btn.addEventListener("click", async () => {
                     const customer = JSON.parse(btn.getAttribute("data-customer"));
+                    // return console.log(customer.user);
 
                     const name_ar = [customer.a_first_name, customer.a_father, customer.a_grand,
                         customer.a_family
@@ -473,7 +482,7 @@
 
                     console.log("Prepared Data:", data);
                     const res = await fetch(
-                        'https://jury-channel-laboring.ngrok-free.dev/submit-all', {
+                        'http://localhost:3000/submit-all', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -516,7 +525,7 @@
                 });
             });
         });
-    </script> --}}
+    </script>
     <script>
         $(document).ready(function() {
             // التحقق من وجود رسالة خطأ في الجلسة (Session)

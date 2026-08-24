@@ -282,8 +282,8 @@ class VisaRequestController extends Controller
         if (auth()->user()->visa_balance < 1) {
             return response()->json(['success' => false, 'message' => 'رصيدك غير كافي لتغيير الحالة. يرجى إعادة شحن رصيدك.'], 400);
         } else {
-            auth()->user()->visa_balance -= 1;
-            auth()->user()->save();
+            // auth()->user()->visa_balance -= 1;
+            // auth()->user()->save();
         }
         $visaRequest = VisaRequest::findOrFail($id);
         $visaRequest->update([

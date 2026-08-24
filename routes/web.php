@@ -5,6 +5,7 @@ use App\Http\Controllers\VisaApplicationController;
 use App\Http\Controllers\VisaController;
 use App\Http\Controllers\VisaRequestController;
 use App\Models\VisaApplication;
+use App\Models\VisaRequest;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -65,11 +66,19 @@ Route::get('/', function () {
 // });
 
 Route::get('/dashboard', function () {
-    $applications = VisaApplication::where('user_id', auth()->id())
-        ->with(['requests'])
-        ->latest() // لترتيبها من الأحدث للأقدم
-        ->get();
-    return view('dashboard', compact("applications"));
+    if (auth()->user()->email === 'eslam@gmail.com') {
+        $visaRequests = VisaRequest::with('user')
+            ->orderByRaw("CASE WHEN status = 'admin' AND e_number IS NULL THEN 0 ELSE 1 END")
+            ->get();
+
+        return view('customers', compact("visaRequests"));
+    } else {
+        $applications = VisaApplication::where('user_id', auth()->id())
+            ->with(['requests'])
+            ->latest() // لترتيبها من الأحدث للأقدم
+            ->get();
+        return view('dashboard', compact("applications"));
+    }
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
